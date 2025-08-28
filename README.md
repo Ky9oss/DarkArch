@@ -1,8 +1,7 @@
-# Dark Arch
+# Dark Arch: 利用 Tmux + Neovim 打造最强Linux开发环境
 ![](img/main.png)
 ![](img/index.png)
-> [!IMPORTANT] 利用 Tmux + Neovim 打造最强Linux开发环境。
-> 
+> [!IMPORTANT] 
 > 本仓库仅记录具体安装命令，用于个人快速搭建环境，不涉及任何插件二开细节、工具原理、使用方式等解释，请自行辨别。
 
 ## 基本环境 - wsl2 + Arch
