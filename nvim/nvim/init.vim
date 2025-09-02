@@ -1,7 +1,6 @@
 call plug#begin()
 
 " List your plugins here
-Plug 'preservim/nerdtree'
 Plug 'jiangmiao/auto-pairs'
 Plug 'nvim-tree/nvim-web-devicons'
 Plug 'akinsho/bufferline.nvim', { 'tag': '*' }
@@ -17,7 +16,6 @@ Plug 'farmergreg/vim-lastplace'
 Plug 'dhruvasagar/vim-table-mode'
 Plug 'neovim/nvim-lspconfig'
 Plug 'j-hui/fidget.nvim', { 'tag': 'v1.6.1' }
-Plug 'preservim/nerdtree'
 Plug 'lukas-reineke/indent-blankline.nvim'
 Plug 'numToStr/Comment.nvim'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
@@ -72,14 +70,37 @@ Plug 'mrjones2014/smart-splits.nvim'
 " icon
 Plug 'ryanoasis/vim-devicons'
 
-" add color for nerdtree
-Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
+" nvim-tree
+Plug 'nvim-tree/nvim-tree.lua'
+
+" Nerdtree
+" Plug 'preservim/nerdtree'
+" " Nerdtree Plugin
+" "" add color for nerdtree
+" Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
+" "" Nerdtree sync
+" Plug 'unkiwii/vim-nerdtree-sync'
+
+" statusline 
+Plug 'itchyny/lightline.vim'
+
+" Cursorline
+Plug 'ya2s/nvim-cursorline'
+
+" better glance at matched information
+Plug 'kevinhwang91/nvim-hlslens'
+
+" minimap
+Plug 'wfxr/minimap.vim'
+
+" highlight
+" Plug 'machakann/vim-highlightedyank'
 
 call plug#end()
 
 " my script
 " source /root/.config/nvim/vim/m0vingLine.vim
-source /root/.config/nvim/vim/n3rdTree.vim
+" source /root/.config/nvim/vim/n3rdTree.vim
 
 " base config
 set tabstop=4
@@ -89,7 +110,18 @@ set number
 set laststatus=3
 set termguicolors
 set encoding=UTF-8
+set noshowmode
 let mapleader = "\\"
+
+" statusline
+let g:lightline = {
+    \ 'enable': { 'tabline': 0 },
+    \ }
+
+" minimap
+let g:minimap_width = 10
+let g:minimap_auto_start = 1
+let g:minimap_auto_start_win_enter = 1
 
 " set clipboard=unnamedplus
 set clipboard=
@@ -138,7 +170,8 @@ nmap <F8> :TagbarToggle<CR>
 
 lua << EOF
 require("keys")
-require("opts")
+require("opts.opts")
+require("opts.nvimTreeOpts")
 -- require('avante_lib').load()
 -- require('avante').setup ()
 require("ibl").setup()
@@ -167,6 +200,18 @@ require("dapui").setup({
     },  
   },
 })
+require('nvim-cursorline').setup {
+  cursorline = {
+    enable = true,
+    timeout = 1000,
+    number = false,
+  },
+  cursorword = {
+    enable = true,
+    min_length = 3,
+    hl = { underline = true },
+  }
+}
 require('render-markdown').setup()
 require("mason").setup({
     ui = {
@@ -665,12 +710,31 @@ dap.configurations.python = {
 }
 
 
-
 local bufferline = require('bufferline')
 bufferline.setup {
     options = {
         tab_size = 8,
     }
 }
+
+
+
+require('hlslens').setup()
+
+local kopts = {noremap = true, silent = true}
+
+vim.api.nvim_set_keymap('n', 'n',
+    [[<Cmd>execute('normal! ' . v:count1 . 'n')<CR><Cmd>lua require('hlslens').start()<CR>]],
+    kopts)
+vim.api.nvim_set_keymap('n', 'N',
+    [[<Cmd>execute('normal! ' . v:count1 . 'N')<CR><Cmd>lua require('hlslens').start()<CR>]],
+    kopts)
+vim.api.nvim_set_keymap('n', '*', [[*<Cmd>lua require('hlslens').start()<CR>]], kopts)
+vim.api.nvim_set_keymap('n', '#', [[#<Cmd>lua require('hlslens').start()<CR>]], kopts)
+vim.api.nvim_set_keymap('n', 'g*', [[g*<Cmd>lua require('hlslens').start()<CR>]], kopts)
+vim.api.nvim_set_keymap('n', 'g#', [[g#<Cmd>lua require('hlslens').start()<CR>]], kopts)
+
+vim.api.nvim_set_keymap('n', '<Leader>l', '<Cmd>noh<CR>', kopts)
+
 
 EOF

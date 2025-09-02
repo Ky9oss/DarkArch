@@ -14,18 +14,19 @@
 3. update repo: `pacman -Syy`
 3. 安装基本工具：`pacman -S --needed base-devel git curl wget unzip zip gdb lib32-glibc lib32-gcc-libs net-tools openssh`
 4. 安装常用工具：`pacman -S zsh fzf ripgrep fd jq bat vim neovim tmux proxychains-ng zoxide fontconfig nodejs universal-ctags nodejs npm`
-5. `proxychains`添加代理：`nvim /etc/proxychains.conf`
-6. 安装`ohmyzsh`:`proxychains sh -c "$(proxychains curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"`
-7. 修改`.zshrc`文件（参考该项目的`.zshrc`）
-8. 安装`tpm`：`git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm`
-9. 安装`oh-my-tmux`，随后修改`~/.config/tmux/tmux.conf.local`,参考项目文件`tmux.conf.local`
+5. 安装插件工具：`cargo install --locked code-minimap`
+6. `proxychains`添加代理：`nvim /etc/proxychains.conf`
+7. 安装`ohmyzsh`:`proxychains sh -c "$(proxychains curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"`
+8. 修改`.zshrc`文件（参考该项目的`.zshrc`）
+9. 安装`tpm`：`git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm`
+10. 安装`oh-my-tmux`，随后修改`~/.config/tmux/tmux.conf.local`,参考项目文件`tmux.conf.local`
 ```sh
 $ git clone --single-branch https://github.com/gpakosz/.tmux.git "/path/to/oh-my-tmux"
 $ mkdir -p ~/.config/tmux
 $ ln -s /path/to/oh-my-tmux/.tmux.conf ~/.config/tmux/tmux.conf
 $ cp /path/to/oh-my-tmux/.tmux.conf.local ~/.config/tmux/tmux.conf.local
 ```
-10. 开启全局代理进入`tmux`,自动安装插件
+1.  开启全局代理进入`tmux`,自动安装插件
 
 ### 安装paru（只能用于非root环境）
 ```sh

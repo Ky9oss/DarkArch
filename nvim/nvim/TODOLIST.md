@@ -1,0 +1,4 @@
+- [ ] minimap 当只剩下nvim-tree时，自动关闭
+- [ ] bufferline多tab时，nvim-tree只高亮被选中的tab
+- [ ] 显示当前绝对路径
+- [ ] 修复bug： `shift+K`查看文档退出后，nvim-tree修改了原先的目录结构，将当前文件放到顶部。
