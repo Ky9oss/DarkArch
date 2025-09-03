@@ -24,7 +24,7 @@ require("nvim-tree").setup({
     root_folder_modifier = ":t",
     icons = {
       show = {
-        git = true,
+        git = false,
         folder = true,
         file = true,
         folder_arrow = true,
@@ -32,7 +32,7 @@ require("nvim-tree").setup({
     },
   },
   filters = {
-    dotfiles = true,
+    dotfiles = false, -- show hidden files
   },
   actions = {
     open_file = {

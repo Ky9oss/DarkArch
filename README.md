@@ -51,6 +51,16 @@ su root
 pacman -U /home/builduser/paru/paru-2.1.0-1-x86_64.pkg.tar.zst
 ```
 
+### git access
+```bash
+git config --global credential.helper store
+git config --system credential.helper store
+
+# 从Github 获取Access Token，开启repo权限
+# git push时，要求填写密码。密码填写为Acsess Token即可
+
+```
+
 ### 安装NerdFont字体(wsl请用windows安装字体)
 1. 克隆库 `proxychains git clone https://github.com/ryanoasis/nerd-fonts`
 2. 安装字体: `cd nerd-fonts && chmod +x ./install.sh && ./install.sh Hack`
