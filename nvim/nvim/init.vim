@@ -96,6 +96,17 @@ Plug 'wfxr/minimap.vim'
 " highlight
 " Plug 'machakann/vim-highlightedyank'
 
+" Linter
+Plug 'dense-analysis/ale'
+
+" editorconfig-vim
+Plug 'editorconfig/editorconfig-vim'
+
+" restrore session
+" Plug 'rmagatti/auto-session'  " [Bug]: can't restore session
+" Plug 'folke/persistence.nvim' " [Bug]: can't restore session
+
+
 call plug#end()
 
 " my script
@@ -122,6 +133,9 @@ let g:lightline = {
 let g:minimap_width = 10
 let g:minimap_auto_start = 1
 let g:minimap_auto_start_win_enter = 1
+
+" ale: Enable ESLint only for JavaScript.
+let b:ale_linters = ['eslint']
 
 " set clipboard=unnamedplus
 set clipboard=

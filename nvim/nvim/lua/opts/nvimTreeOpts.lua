@@ -55,10 +55,11 @@ local function open_nvim_tree(data)
       local dir = vim.fn.fnamemodify(data.file, ":p:h")
       vim.cmd.cd(dir)
       require("nvim-tree.api").tree.toggle({ focus = false, find_file = true, })
-  elseif no_name then 
+  elseif no_name then
       require("nvim-tree.api").tree.open()
   else
-    return
+      require("nvim-tree.api").tree.open()
+    -- return
   end
 
 end
