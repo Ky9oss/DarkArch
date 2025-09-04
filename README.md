@@ -13,7 +13,7 @@
 2. 更新系统：`pacman -Syu`
 3. update repo: `pacman -Syy`
 3. 安装基本工具：`pacman -S --needed base-devel git curl wget unzip zip gdb lib32-glibc lib32-gcc-libs net-tools openssh`
-4. 安装常用工具：`pacman -S zsh fzf ripgrep fd jq bat vim neovim tmux proxychains-ng zoxide fontconfig nodejs universal-ctags nodejs npm`
+4. 安装常用工具：`pacman -S zsh fzf ripgrep rsync fd jq bat vim neovim tmux proxychains-ng zoxide fontconfig nodejs universal-ctags nodejs npm`
 5. 安装插件工具：`cargo install --locked code-minimap`
 6. `proxychains`添加代理：`nvim /etc/proxychains.conf`
 7. 安装`ohmyzsh`:`proxychains sh -c "$(proxychains curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"`

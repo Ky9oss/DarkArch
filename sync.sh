@@ -1,6 +1,6 @@
 #!/bin/bash
 # =====================================
-# Script Name : sync_config.sh
+# Script Name : sync.sh
 # Description : 同步配置文件到指定目录
 # Author      : Ky9oss
 # Date        : 2025-08-28
