@@ -11,12 +11,14 @@ SRC_ZSHRC="<your_config>"
 SRC_TMUX="<your_config>"
 SRC_NVIM="<your_config>"
 SRC_SCRIPT="<your_config>"
+SRC_RSCRIPT="<your_config>"
 
 DEST_DIR="<your_config>"
 DEST_ZSHRC="<your_config>"
 DEST_TMUX="<your_config>"
 DEST_NVIM="<your_config>"
 DEST_SCRIPT="<your_config>"
+DEST_RSCRIPT="<your_config>"
 
 # === 创建目标目录（如果不存在） ===
 mkdir -p "$DEST_DIR"
@@ -52,4 +54,11 @@ if [[ -f "$SRC_SCRIPT" ]]; then
     echo "[OK] sync.sh 已同步 (已移除PATH)"
 else
     echo "[WARN] 未找到 $SRC_SCRIPT"
+fi
+
+if [[ -f "$SRC_RSCRIPT" ]]; then
+    cat "$SRC_RSCRIPT" | sed -E 's/^([A-Z_]+)=.*/\1="<your_config>"/' > "$DEST_RSCRIPT"
+    echo "[OK] rsync.sh 已同步 (已移除PATH)"
+else
+    echo "[WARN] 未找到 $SRC_RSCRIPT"
 fi

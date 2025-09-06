@@ -97,7 +97,7 @@ Plug 'wfxr/minimap.vim'
 " Plug 'machakann/vim-highlightedyank'
 
 " Linter
-Plug 'dense-analysis/ale'
+" Plug 'dense-analysis/ale'
 
 " editorconfig-vim
 Plug 'editorconfig/editorconfig-vim'
@@ -135,7 +135,7 @@ let g:minimap_auto_start = 1
 let g:minimap_auto_start_win_enter = 1
 
 " ale: Enable ESLint only for JavaScript.
-let b:ale_linters = ['eslint']
+" let b:ale_linters = ['eslint']
 
 " set clipboard=unnamedplus
 set clipboard=
