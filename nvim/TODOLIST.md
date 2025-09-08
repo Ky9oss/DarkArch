@@ -5,8 +5,12 @@
 - [ ] 修复bug： `shift+K`查看文档退出后，nvim-tree修改了原先的目录结构，将当前文件放到顶部。
 - [ ] 修复bug：telescope被`PlugClean`莫名删除
 - [ ] bufferline多tab时，nvim-tree只高亮被选中的tab
+- [ ] redundant double quotes when creating a new line
+- [ ] when use }/]/) should not change the cursor to next symbol and not creat a new symbel
+- [ ] layout fault: minimap got too much layout
 
 # 添加功能
+- [ ] LSP Omnisharp 远程调用
 - [ ] 布局自动恢复
 - [ ] minimap 当只剩下nvim-tree时，自动关闭
 - [ ] minimap 不要被选中（C-w + l），给一个末尾id？
@@ -15,10 +19,30 @@
 - [ ] git历史，仿github化阅读
 - [ ] 内置shell终端：不要重复加载shell，避免wsl拖慢程序
 - [ ] 内置shell终端：不要esc退出，仅`:q`
-- [ ]
+- [ ] 远程LSP，实现跨平台写代码并LSP编译
 - [ ]
 - [ ] 能否实现近乎于chrome的js debuger
 
+# 需要研究
+- [ ] lspconfig 启动逻辑，为何cshrap启动有误
+
+# 远程LSP
+
+## 方法一：手动配置
+```bash
+socat TCP-LISTEN:6000,reuseaddr,fork EXEC:"omnisharp.exe -lsp"
+```
+
+```lua
+require'lspconfig'.omnisharp.setup{
+    cmd = {"nc", "windows-host", "6000"},
+    root_dir = require'lspconfig'.util.root_pattern("*.sln", "*.csproj"),
+}
+
+
+```
+
+## 方法二：distant.nvim
 
 # 调试方法
 neovim内置性能分析器：

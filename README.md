@@ -110,3 +110,20 @@ echo 'eval "$(pyenv init - zsh)"' >> ~/.zshrc
 ### Neovim-dotnet
 1. `pacman -S dotnet-sdk`
 2. `dotnet tool install -g EasyDotnet`
+
+> [!CAUTION]
+> 如果需要直接修改`omnisharp`的配置，会意外导致Lsp无法被注册，不确定原因。
+> 修复办法是: 直接在`~/.local/share/nvim/plugged/nvim-lspconfig/lsp/omnisharp.lua`中修改配置
+
+### Neovim Remote LSP
+
+#### Windows OpenSSH Server
+修改配置文件`C:\ProgramData\ssh\sshd_config`:
+```
+Port <your_port>
+ListenAddress 127.0.0.1
+PubkeyAuthentication yes
+AuthorizedKeysFile	.ssh/authorized_keys
+```
+> [!CAUTION]
+> windows里的权限配置很坑，`~/.ssh` `~/.ssh/authorized_keys` 两个文件的权限很容易造成ssh公私钥认证失败。使用`https://github.com/PowerShell/Win32-OpenSSH`所提供的脚本`FixHostFilePermission.ps1`可以解决问题。

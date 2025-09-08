@@ -106,6 +106,24 @@ Plug 'editorconfig/editorconfig-vim'
 " Plug 'rmagatti/auto-session'  " [Bug]: can't restore session
 " Plug 'folke/persistence.nvim' " [Bug]: can't restore session
 
+" omnisharp enhancement
+Plug 'Hoffs/omnisharp-extended-lsp.nvim'
+
+" edit remote files and use remote LSP
+Plug 'chipsenkbeil/distant.nvim', {
+\ 'branch': 'v0.3',
+\ }
+
+" relative line number
+Plug 'sitiom/nvim-numbertoggle'
+
+" remote lsp
+Plug 'nosduco/remote-sshfs.nvim'
+Plug 'Chayanon-Ninyawee/remote-lsp.nvim'
+
+" Interactive Repls
+Plug 'Vigemus/iron.nvim'
+
 
 call plug#end()
 
@@ -183,11 +201,89 @@ nmap <F8> :TagbarToggle<CR>
 " autocmd! User avante.nvim 
 
 lua << EOF
-require("keys")
 require("opts.opts")
 require("opts.nvimTreeOpts")
+local lspconfig = require('lspconfig')
+local configs = require('lspconfig.configs')
 -- require('avante_lib').load()
 -- require('avante').setup ()
+
+local plugin = require('distant')
+plugin:setup()
+assert(plugin:is_initialized(), 'Distant plugin not initialized')
+-- plugin:setup({
+--     servers = {
+--         ['*'] = {
+--             lsp = {
+--                 ['windows_omnisharp'] = {
+--                     cmd = 'OmniSharp.exe -lsp -z --hostPID 12345 --encoding utf-8 -z',
+--                     -- cmd = 'OmniSharp.exe -lsp -z --encoding utf-8 -z',
+--                     root_dir = lspconfig.util.root_pattern(".csproj", vim.fn.getcwd()),
+--                     file_types = {'cs', 'vb'},
+--                     on_exit = function(code, signal, client_id)
+--                         local prefix = '[Client ' .. tostring(client_id) .. ']'
+--                         print(prefix .. ' LSP exited with code ' .. tostring(code))
+--
+--                         -- Signal can be nil
+--                         if signal ~= nil then
+--                             print(prefix .. ' Signal ' .. tostring(signal))
+--                         end
+--                     end,
+--                 }
+--             }
+--         }
+--     }
+-- })
+
+require('telescope').load_extension 'remote-sshfs'
+
+require('remote-sshfs').setup{
+  connections = {
+    ssh_configs = { -- which ssh configs to parse for hosts list
+      vim.fn.expand "$HOME" .. "/.ssh/config",
+      "/etc/ssh/ssh_config",
+      -- "/path/to/custom/ssh_config"
+    },
+    ssh_known_hosts = vim.fn.expand "$HOME" .. "/.ssh/known_hosts",
+    -- NOTE: Can define ssh_configs similarly to include all configs in a folder
+    -- ssh_configs = vim.split(vim.fn.globpath(vim.fn.expand "$HOME" .. "/.ssh/configs", "*"), "\n")
+    sshfs_args = { -- arguments to pass to the sshfs command
+      "-o reconnect",
+      "-o ConnectTimeout=5",
+    },
+  },
+  mounts = {
+    base_dir = vim.fn.expand "$HOME" .. "/.sshfs/", -- base directory for mount points
+    unmount_on_exit = true, -- run sshfs as foreground, will unmount on vim exit
+  },
+  handlers = {
+    on_connect = {
+      change_dir = true, -- when connected change vim working directory to mount point
+    },
+    on_disconnect = {
+      clean_mount_folders = false, -- remove mount point folder on disconnect/unmount
+    },
+    on_edit = {}, -- not yet implemented
+  },
+  ui = {
+    select_prompts = false, -- not yet implemented
+    confirm = {
+      connect = true, -- prompt y/n when host is selected to connect to
+      change_dir = false, -- prompt y/n to change working directory on connection (only applicable if handlers.on_connect.change_dir is enabled)
+    },
+  },
+  log = {
+    enabled = false, -- enable logging
+    truncate = false, -- truncate logs
+    types = { -- enabled log types
+      all = false,
+      util = false,
+      handler = false,
+      sshfs = false,
+    },
+  },
+}
+
 require("ibl").setup()
 require('Comment').setup()
 require("bufferline").setup{}
@@ -241,21 +337,23 @@ require("mason-lspconfig").setup {
         exclude = {
             "rust-analyzer",
             "pylsp",
-            "bashls"
+            "bashls",
+            -- "omnisharp",
         }
-    }
+    },
 }
+
 
 -- lspconfig
 require('lspconfig').rust_analyzer.setup{
-settings = {
-	["rust-analyzer"] = {
-		cargo = {
-			allFeatures = true
-		},
-		procMacro = {
-			enable = true
-		}
+    settings = {
+        ["rust-analyzer"] = {
+            cargo = {
+                allFeatures = true
+            },
+            procMacro = {
+                enable = true
+            }
 		}
 	}
 }
@@ -282,8 +380,6 @@ require("lspconfig").pylsp.setup({
 })
 
 
-local lspconfig = require('lspconfig')
-local configs = require('lspconfig.configs')
 
 -- 如果没注册过 asm_lsp，则注册
 if not configs.asm_lsp then
@@ -750,5 +846,277 @@ vim.api.nvim_set_keymap('n', 'g#', [[g#<Cmd>lua require('hlslens').start()<CR>]]
 
 vim.api.nvim_set_keymap('n', '<Leader>l', '<Cmd>noh<CR>', kopts)
 
+require("keys")
+
+local api = require('remote-sshfs.api')
+vim.keymap.set('n', '<leader>rc', api.connect, {})
+vim.keymap.set('n', '<leader>rd', api.disconnect, {})
+vim.keymap.set('n', '<leader>re', api.edit, {})
+
+-- (optional) Override telescope find_files and live_grep to make dynamic based on if connected to host
+local builtin = require("telescope.builtin")
+local connections = require("remote-sshfs.connections")
+vim.keymap.set("n", "<leader>rf", function()
+ if connections.is_connected() then
+  api.find_files()
+ else
+  builtin.find_files()
+ end
+end, {})
+vim.keymap.set("n", "<leader>rg", function()
+ if connections.is_connected() then
+  api.live_grep()
+ else
+  builtin.live_grep()
+ end
+end, {})
+
+-- require("remote-lsp").setup({
+--     python_bin = "/root/.pyenv/shims/python3",
+--     servers = {
+--         omnisharp = { 
+--             cmd = {
+--                     'OmniSharp.exe',
+--                     '-z', -- https://github.com/OmniSharp/omnisharp-vscode/pull/4300
+--                     '--hostPID',
+--                     tostring(vim.fn.getpid()),
+--                     'DotNet:enablePackageRestore=false',
+--                     '--encoding',
+--                     'utf-8',
+--                     '--languageserver',
+--             },
+--           file_types = {'cs', 'vb'},
+--           root_dir = function(bufnr, on_dir)
+--             local fname = vim.api.nvim_buf_get_name(bufnr)
+--             on_dir(
+--               util.root_pattern '*.sln'(fname)
+--                 or util.root_pattern '*.csproj'(fname)
+--                 or util.root_pattern 'omnisharp.json'(fname)
+--                 or util.root_pattern 'function.json'(fname)
+--             )
+--           end,
+--
+--           init_options = {},
+--           capabilities = {
+--             workspace = {
+--               workspaceFolders = false, -- https://github.com/OmniSharp/omnisharp-roslyn/issues/909
+--             },
+--           },
+--           settings = {
+--             FormattingOptions = {
+--               -- Enables support for reading code style, naming convention and analyzer
+--               -- settings from .editorconfig.
+--               EnableEditorConfigSupport = true,
+--               -- Specifies whether 'using' directives should be grouped and sorted during
+--               -- document formatting.
+--               OrganizeImports = nil,
+--             },
+--             MsBuild = {
+--               -- If true, MSBuild project system will only load projects for files that
+--               -- were opened in the editor. This setting is useful for big C# codebases
+--               -- and allows for faster initialization of code navigation features only
+--               -- for projects that are relevant to code that is being edited. With this
+--               -- setting enabled OmniSharp may load fewer projects and may thus display
+--               -- incomplete reference lists for symbols.
+--               LoadProjectsOnDemand = nil,
+--             },
+--             RoslynExtensionsOptions = {
+--               -- Enables support for roslyn analyzers, code fixes and rulesets.
+--               EnableAnalyzersSupport = nil,
+--               -- Enables support for showing unimported types and unimported extension
+--               -- methods in completion lists. When committed, the appropriate using
+--               -- directive will be added at the top of the current file. This option can
+--               -- have a negative impact on initial completion responsiveness,
+--               -- particularly for the first few completion sessions after opening a
+--               -- solution.
+--               EnableImportCompletion = nil,
+--               -- Only run analyzers against open files when 'enableRoslynAnalyzers' is
+--               -- true
+--               AnalyzeOpenDocumentsOnly = nil,
+--               -- Enables the possibility to see the code in external nuget dependencies
+--               EnableDecompilationSupport = nil,
+--             },
+--             RenameOptions = {
+--               RenameInComments = nil,
+--               RenameOverloads = nil,
+--               RenameInStrings = nil,
+--             },
+--             Sdk = {
+--               -- Specifies whether to include preview versions of the .NET SDK when
+--               -- determining which version to use for project loading.
+--               IncludePrereleases = true,
+--             },
+--             
+--           },
+--
+--         },
+--     },
+-- })
+-- vim.lsp.config("omnisharp", {
+--     cmd = {
+--         'OmniSharp.exe',
+--         '-z', -- https://github.com/OmniSharp/omnisharp-vscode/pull/4300
+--         '--hostPID',
+--         tostring(vim.fn.getpid()),
+--         'DotNet:enablePackageRestore=false',
+--         '--encoding',
+--         'utf-8',
+--         '--languageserver',
+--     },
+--     file_types = {'cs', 'vb'},
+--     root_dir = function(bufnr, on_dir)
+--     local fname = vim.api.nvim_buf_get_name(bufnr)
+--     on_dir(
+--       util.root_pattern '*.sln'(fname)
+--         or util.root_pattern '*.csproj'(fname)
+--         or util.root_pattern 'omnisharp.json'(fname)
+--         or util.root_pattern 'function.json'(fname)
+--     )
+--     end,
+--
+--     init_options = {},
+--     capabilities = {
+--     workspace = {
+--       workspaceFolders = false, -- https://github.com/OmniSharp/omnisharp-roslyn/issues/909
+--     },
+--     },
+--     settings = {'Vigemus/iron.nvim'
+--     FormattingOptions = {
+--       -- Enables support for reading code style, naming convention and analyzer
+--       -- settings from .editorconfig.
+--       EnableEditorConfigSupport = true,
+--       -- Specifies whether 'using' directives should be grouped and sorted during
+--       -- document formatting.
+--       OrganizeImports = nil,
+--     },
+--     MsBuild = {
+--       -- If true, MSBuild project system will only load projects for files that
+--       -- were opened in the editor. This setting is useful for big C# codebases
+--       -- and allows for faster initialization of code navigation features only
+--       -- for projects that are relevant to code that is being edited. With this
+--       -- setting enabled OmniSharp may load fewer projects and may thus display
+--       -- incomplete reference lists for symbols.
+--       LoadProjectsOnDemand = nil,
+--     },
+--     RoslynExtensionsOptions = {
+--       -- Enables support for roslyn analyzers, code fixes and rulesets.
+--       EnableAnalyzersSupport = nil,
+--       -- Enables support for showing unimported types and unimported extension
+--       -- methods in completion lists. When committed, the appropriate using
+--       -- directive will be added at the top of the current file. This option can
+--       -- have a negative impact on initial completion responsiveness,
+--       -- particularly for the first few completion sessions after opening a
+--       -- solution.
+--       EnableImportCompletion = nil,
+--       -- Only run analyzers against open files when 'enableRoslynAnalyzers' is
+--       -- true
+--       AnalyzeOpenDocumentsOnly = nil,
+--       -- Enables the possibility to see the code in external nuget dependencies
+--       EnableDecompilationSupport = nil,
+--     },
+--     RenameOptions = {
+--       RenameInComments = nil,
+--       RenameOverloads = nil,
+--       RenameInStrings = nil,
+--     },
+--     Sdk = {
+--       -- Specifies whether to include preview versions of the .NET SDK when
+--       -- determining which version to use for project loading.
+--       IncludePrereleases = true,
+--     },
+--
+--     },
+--     -- You can set root_dir or root_markers here and it will still work with remote-lsp.nvim plugin
+-- })
+
+local iron = require("iron.core")
+local view = require("iron.view")
+local common = require("iron.fts.common")
+
+iron.setup {
+  config = {
+    -- Whether a repl should be discarded or not
+    scratch_repl = true,
+    -- Your repl definitions come here
+    repl_definition = {
+      sh = {
+        -- Can be a table or a function that
+        -- returns a table (see below)
+        command = {"zsh"}
+      },
+      python = {
+        command = { "python3" },  -- or { "ipython", "--no-autoindent" }
+        format = common.bracketed_paste_python,
+        block_dividers = { "# %%", "#%%" },
+        env = {PYTHON_BASIC_REPL = "1"} --this is needed for python3.13 and up.
+      },
+      lua = {
+        command = { "luajit" },  -- or { "ipython", "--no-autoindent" }
+      }
+    },
+    -- set the file type of the newly created repl to ft
+    -- bufnr is the buffer id of the REPL and ft is the filetype of the 
+    -- language being used for the REPL. 
+    repl_filetype = function(bufnr, ft)
+      return ft
+      -- or return a string name such as the following
+      -- return "iron"
+    end,
+    -- How the repl window will be displayed
+    -- See below for more information
+    repl_open_cmd = view.bottom(10),
+
+    -- repl_open_cmd can also be an array-style table so that multiple 
+    -- repl_open_commands can be given.
+    -- When repl_open_cmd is given as a table, the first command given will
+    -- be the command that `IronRepl` initially toggles.
+    -- Moreover, when repl_open_cmd is a table, each key will automatically
+    -- be available as a keymap (see `keymaps` below) with the names 
+    -- toggle_repl_with_cmd_1, ..., toggle_repl_with_cmd_k
+    -- For example,
+    -- 
+    -- repl_open_cmd = {
+    --   view.split.vertical.rightbelow("%40"), -- cmd_1: open a repl to the right
+    --   view.split.rightbelow("%25")  -- cmd_2: open a repl below
+    -- }
+
+  },
+  -- Iron doesn't set keymaps by default anymore.
+  -- You can set them here or manually add keymaps to the functions in iron.core
+  keymaps = {
+    toggle_repl = "<space>rr", -- toggles the repl open and closed.
+    -- If repl_open_command is a table as above, then the following keymaps are
+    -- available
+    -- toggle_repl_with_cmd_1 = "<space>rv",
+    -- toggle_repl_with_cmd_2 = "<space>rh",
+    restart_repl = "<space>rR", -- calls `IronRestart` to restart the repl
+    send_motion = "<space>sc",
+    visual_send = "<space>sc",
+    send_file = "<space>sf",
+    send_line = "<space>sl",
+    send_paragraph = "<space>sp",
+    send_until_cursor = "<space>su",
+    send_mark = "<space>sm",
+    send_code_block = "<space>sb",
+    send_code_block_and_move = "<space>sn",
+    mark_motion = "<space>mc",
+    mark_visual = "<space>mc",
+    remove_mark = "<space>md",
+    cr = "<space>s<cr>",
+    interrupt = "<space>s<space>",
+    exit = "<space>sq",
+    clear = "<space>cl",
+  },
+  -- If the highlight is on, you can change how it looks
+  -- For the available options, check nvim_set_hl
+  highlight = {
+    italic = true
+  },
+  ignore_blank_lines = true, -- ignore blank lines when sending visual select lines
+}
+
+-- iron also has a list of commands, see :h iron-commands for all available commands
+vim.keymap.set('n', '<space>rf', '<cmd>IronFocus<cr>')
+vim.keymap.set('n', '<space>rh', '<cmd>IronHide<cr>')
 
 EOF

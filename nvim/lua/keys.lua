@@ -46,3 +46,8 @@ vim.keymap.set('n', '<C-w>l', require('smart-splits').move_cursor_right)
 --
 -- -- stop Persistence => session won't be saved on exit
 -- vim.keymap.set("n", "<leader>qd", function() require("persistence").stop() end)
+--
+--
+
+
+-- remote-sshfs
