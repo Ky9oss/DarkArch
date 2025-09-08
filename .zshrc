@@ -38,6 +38,9 @@ export PATH=$PATH:"/root/tools/runtime/default_cargo_target"
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 
+# luarocks
+export LUA_PATH="/usr/share/lua/5.1/?.lua;/usr/share/lua/5.1/?/init.lua;;"
+export LUA_CPATH="/usr/lib/lua/5.1/?.so;;"
 
 # pnpm
 export PNPM_HOME="/root/.local/share/pnpm"

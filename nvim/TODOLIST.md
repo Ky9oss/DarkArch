@@ -25,6 +25,7 @@
 
 # 需要研究
 - [ ] lspconfig 启动逻辑，为何cshrap启动有误
+- [ ] Client -> LSP server -> Client 具体转发数据格式、是否预处理/后处理数据、能否直接使用TCP流
 
 # 远程LSP
 

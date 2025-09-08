@@ -117,6 +117,16 @@ echo 'eval "$(pyenv init - zsh)"' >> ~/.zshrc
 
 ### Neovim Remote LSP
 
+```bash
+pacman -S luarocks lua51
+luarocks config lua_version 5.1
+luarocks config variables.LUA_INCDIR /usr/include/luajit-2.1
+proxychains luarocks install luasocket --lua-version=5.1 --force
+
+# check if success
+luajit -e "local socket = require('socket'); print(socket._VERSION)"
+```
+
 #### Windows OpenSSH Server
 修改配置文件`C:\ProgramData\ssh\sshd_config`:
 ```
