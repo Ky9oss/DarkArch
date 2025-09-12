@@ -93,9 +93,6 @@ Plug 'kevinhwang91/nvim-hlslens'
 " minimap
 Plug 'wfxr/minimap.vim'
 
-" highlight
-" Plug 'machakann/vim-highlightedyank'
-
 " Linter
 " Plug 'dense-analysis/ale'
 
