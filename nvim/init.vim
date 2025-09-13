@@ -335,6 +335,7 @@ require("mason-lspconfig").setup {
             "rust-analyzer",
             "pylsp",
             "bashls",
+            "lua_ls",
             -- "omnisharp",
         }
     },
@@ -376,6 +377,22 @@ require("lspconfig").pylsp.setup({
   },
 })
 
+require("lspconfig").lua_ls.setup {
+  settings = {
+    Lua = {
+      runtime = {
+        version = "LuaJIT",  -- 告诉 LSP 使用 LuaJIT（相当于 5.1）
+      },
+      diagnostics = {
+        globals = { "vim" }, -- 避免 'vim' 未定义警告
+      },
+      workspace = {
+        library = vim.api.nvim_get_runtime_file("", true), -- 导入 Neovim 运行时库
+      },
+      telemetry = { enable = false },
+    },
+  },
+}
 
 
 -- 如果没注册过 asm_lsp，则注册
