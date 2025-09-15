@@ -200,6 +200,7 @@ nmap <F8> :TagbarToggle<CR>
 lua << EOF
 require("opts.opts")
 require("opts.nvimTreeOpts")
+require("before-quit")
 local lspconfig = require('lspconfig')
 local configs = require('lspconfig.configs')
 -- require('avante_lib').load()

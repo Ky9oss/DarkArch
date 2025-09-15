@@ -2,12 +2,13 @@
 - [x] 修复卡顿
     - 已修复：用于eslint的`ale`卡飞了，单操作2s以上，不确定为什么
 
-- [ ] 修复bug： `shift+K`查看文档退出后，nvim-tree修改了原先的目录结构，将当前文件放到顶部。
-- [ ] 修复bug：telescope被`PlugClean`莫名删除
+- [ ] fix bug： `shift+K`查看文档退出后，nvim-tree修改了原先的目录结构，将当前文件放到顶部。
+- [ ] fix bug：telescope被`PlugClean`莫名删除
 - [ ] bufferline多tab时，nvim-tree只高亮被选中的tab
 - [ ] redundant double quotes when creating a new line
 - [ ] when use }/]/) should not change the cursor to next symbol and not creat a new symbel
 - [ ] layout fault: minimap got too much layout
+- [ ] fix bug: nvim-tree 没有固定根目录，而是随着文件的变动随意跳跃
 
 # 添加功能
 - [ ] LSP Omnisharp 远程调用
