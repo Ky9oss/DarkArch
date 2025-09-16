@@ -35,16 +35,14 @@ stack traceback:
 # 添加功能
 - [ ] LSP Omnisharp 远程调用
 - [ ] 布局自动恢复
-- [x] minimap 自动关闭
-- [ ] minimap 不要被选中（C-w + l），给一个末尾id？
 - [ ] 显示当前绝对路径
-- [ ] 实现类似vscode远程使用的neovim方式
-- [ ] git历史，仿github化阅读
+- [x] minimap 自动关闭
 - [ ] 内置shell终端：不要重复加载shell，避免wsl拖慢程序
 - [ ] 内置shell终端：不要esc退出，仅`:q`
 - [ ] 远程LSP，实现跨平台写代码并LSP编译
 - [ ]
 - [ ] 能否实现近乎于chrome的js debuger
+- [ ] git历史，仿github化阅读
 
 # 需要研究
 - [ ] lspconfig 启动逻辑，为何cshrap启动有误

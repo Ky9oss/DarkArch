@@ -1,31 +1,55 @@
 call plug#begin()
 
-" List your plugins here
-Plug 'jiangmiao/auto-pairs'
-Plug 'nvim-tree/nvim-web-devicons'
+" auto pair
+Plug 'windwp/nvim-autopairs'
+" Plug 'jiangmiao/auto-pairs'
+
+" icon
+Plug 'nvim-tree/nvim-web-devicons' "or Plug 'echasnovski/mini.icons'
+
+" beauty tab
 Plug 'akinsho/bufferline.nvim', { 'tag': '*' }
 
 " themes
 Plug 'folke/tokyonight.nvim'
-" Plug 'daltonmenezes/aura-theme', { 'rtp': 'packages/neovim' }
-" Plug 'tanvirtin/monokai.nvim'
-" Plug 'EdenEast/nightfox.nvim'
+    " Plug 'daltonmenezes/aura-theme', { 'rtp': 'packages/neovim' }
+    " Plug 'tanvirtin/monokai.nvim'
+    " Plug 'EdenEast/nightfox.nvim'
 
-"" Plug 'instant-markdown/vim-instant-markdown', {'for': 'markdown', 'do': 'yarn install'}
+" intelligently reopens files at your last edit position
 Plug 'farmergreg/vim-lastplace'
+
+" automatic table creator. 
 Plug 'dhruvasagar/vim-table-mode'
+
+" LSP
 Plug 'neovim/nvim-lspconfig'
+
+" LSP progress messages
 Plug 'j-hui/fidget.nvim', { 'tag': 'v1.6.1' }
+
+" indentation lines
 Plug 'lukas-reineke/indent-blankline.nvim'
+
+" Quickly add comment
 Plug 'numToStr/Comment.nvim'
+
+" Treesitter-based highlighting
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+
+" Utils: Useful lua functions 
 Plug 'nvim-lua/plenary.nvim'
+
+" \ff \fg
 Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.8' }
 
-" avante.nvim
-" Plug 'stevearc/dressing.nvim'
-" Plug 'MunifTanjim/nui.nvim'
-" Plug 'yetone/avante.nvim', { 'branch': 'main', 'do': 'make' }
+" AI plugins. Make neovim like Cursor.
+    " Plug 'stevearc/dressing.nvim'
+    " Plug 'MunifTanjim/nui.nvim'
+    " Plug 'yetone/avante.nvim', { 'branch': 'main', 'do': 'make' }
+    "
+    " Use github copilot
+    " Plug 'zbirenbaum/copilot.lua'
 
 " Completion framework
 Plug 'hrsh7th/nvim-cmp'
@@ -35,24 +59,24 @@ Plug 'hrsh7th/cmp-nvim-lsp-signature-help'
 Plug 'hrsh7th/cmp-vsnip'                             
 Plug 'hrsh7th/cmp-path'                              
 Plug 'hrsh7th/cmp-buffer'                            
-Plug 'hrsh7th/vim-vsnip'
-Plug 'voldikss/vim-floaterm'
+Plug 'L3MON4D3/LuaSnip' 
+Plug 'saadparwaiz1/cmp_luasnip'
 
 
-Plug 'nvim-tree/nvim-web-devicons' "or Plug 'echasnovski/mini.icons'
-Plug 'HakonHarnes/img-clip.nvim'
-Plug 'zbirenbaum/copilot.lua'
+" floating window
 Plug 'voldikss/vim-floaterm'
-Plug 'lukas-reineke/indent-blankline.nvim'
+
+" heilight function's args with treesitter
 Plug 'm-demare/hlargs.nvim'
+
+" flash when cursor jumps
 Plug 'danilamihailov/beacon.nvim'
+
+" F8 show the outline
 Plug 'preservim/tagbar'
 
 " markdown
 Plug 'MeanderingProgrammer/render-markdown.nvim'
-
-" mermaid
-" Plug '3rd/diagram.nvim'
 
 " mason
 Plug 'mason-org/mason.nvim'
@@ -73,14 +97,6 @@ Plug 'ryanoasis/vim-devicons'
 " nvim-tree
 Plug 'nvim-tree/nvim-tree.lua'
 
-" Nerdtree
-" Plug 'preservim/nerdtree'
-" " Nerdtree Plugin
-" "" add color for nerdtree
-" Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
-" "" Nerdtree sync
-" Plug 'unkiwii/vim-nerdtree-sync'
-
 " statusline 
 Plug 'itchyny/lightline.vim'
 
@@ -91,7 +107,7 @@ Plug 'ya2s/nvim-cursorline'
 Plug 'kevinhwang91/nvim-hlslens'
 
 " minimap
-Plug 'wfxr/minimap.vim'
+" Plug 'wfxr/minimap.vim'
 
 " Linter
 " Plug 'dense-analysis/ale'
@@ -106,17 +122,12 @@ Plug 'editorconfig/editorconfig-vim'
 " omnisharp enhancement
 Plug 'Hoffs/omnisharp-extended-lsp.nvim'
 
-" edit remote files and use remote LSP
-Plug 'chipsenkbeil/distant.nvim', {
-\ 'branch': 'v0.3',
-\ }
-
 " relative line number
 Plug 'sitiom/nvim-numbertoggle'
 
 " remote lsp
 Plug 'nosduco/remote-sshfs.nvim'
-Plug 'Chayanon-Ninyawee/remote-lsp.nvim'
+"Plug 'Chayanon-Ninyawee/remote-lsp.nvim'
 
 " Interactive Repls
 Plug 'Vigemus/iron.nvim'
@@ -145,9 +156,9 @@ let g:lightline = {
     \ }
 
 " minimap
-let g:minimap_width = 10
-let g:minimap_auto_start = 1
-let g:minimap_auto_start_win_enter = 1
+" let g:minimap_width = 10
+" let g:minimap_auto_start = 1
+" let g:minimap_auto_start_win_enter = 1
 
 " ale: Enable ESLint only for JavaScript.
 " let b:ale_linters = ['eslint']
@@ -194,8 +205,20 @@ nnoremap <silent><leader>H :BufferLineMovePrev<CR>
 " tagbar
 nmap <F8> :TagbarToggle<CR>
 
-" avante.nvim
-" autocmd! User avante.nvim 
+" vim-table-mode
+function! s:isAtStartOfLine(mapping)
+  let text_before_cursor = getline('.')[0 : col('.')-1]
+  let mapping_pattern = '\V' . escape(a:mapping, '\')
+  let comment_pattern = '\V' . escape(substitute(&l:commentstring, '%s.*$', '', ''), '\')
+  return (text_before_cursor =~? '^' . ('\v(' . comment_pattern . '\v)?') . '\s*\v' . mapping_pattern . '\v$')
+endfunction
+
+inoreabbrev <expr> <bar><bar>
+          \ <SID>isAtStartOfLine('\|\|') ?
+          \ '<c-o>:TableModeEnable<cr><bar><space><bar><left><left>' : '<bar><bar>'
+inoreabbrev <expr> __
+          \ <SID>isAtStartOfLine('__') ?
+          \ '<c-o>:silent! TableModeDisable<cr>' : '__'
 
 lua << EOF
 require("opts.opts")
@@ -203,12 +226,7 @@ require("opts.nvimTreeOpts")
 require("before-quit")
 local lspconfig = require('lspconfig')
 local configs = require('lspconfig.configs')
--- require('avante_lib').load()
--- require('avante').setup ()
 
-local plugin = require('distant')
-plugin:setup()
-assert(plugin:is_initialized(), 'Distant plugin not initialized')
 -- plugin:setup({
 --     servers = {
 --         ['*'] = {
@@ -282,6 +300,8 @@ require('remote-sshfs').setup{
   },
 }
 
+
+require("nvim-autopairs").setup {}
 require("ibl").setup()
 require('Comment').setup()
 require("bufferline").setup{}
@@ -664,7 +684,7 @@ cmp.setup({
   -- Enable LSP snippets
   snippet = {
     expand = function(args)
-        vim.fn["vsnip#anonymous"](args.body)
+        require('luasnip').lsp_expand(args.body)
     end,
   },
   mapping = {

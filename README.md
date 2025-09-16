@@ -71,10 +71,8 @@ git config --system credential.helper store
 2. 将其他`nvim/`下所有文件复制至`~/.config/nvim/`文件夹中
 3. 重启nvim并使用`:PlugInstall`安装插件
 4. 安装`nvim-lspconfig`:`proxychains git clone https://github.com/neovim/nvim-lspconfig ~/.config/nvim/pack/nvim/start/nvim-lspconfig`
-5. change `.config/nvim/lua/opts.lua`
-6. change `.config/nvim/lua/keys.lua`
 
-### Neovim-markdown
+### Neovim-markdowss
 1. `MasonInstall marksman`
 
 ### Neovim-rust
