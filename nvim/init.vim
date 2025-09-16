@@ -378,17 +378,23 @@ require("lspconfig").pylsp.setup({
   },
 })
 
+local runtime_path = vim.api.nvim_get_runtime_file("", true)  -- 返回 runtimepath 下所有文件
+local library = {}
+for _, path in ipairs(runtime_path) do
+  library[path] = true
+end
 require("lspconfig").lua_ls.setup {
   settings = {
     Lua = {
       runtime = {
-        version = "LuaJIT",  -- 告诉 LSP 使用 LuaJIT（相当于 5.1）
+        version = "LuaJIT", 
+        path = vim.split(package.path, ";"),
       },
       diagnostics = {
         globals = { "vim" }, -- 避免 'vim' 未定义警告
       },
       workspace = {
-        library = vim.api.nvim_get_runtime_file("", true), -- 导入 Neovim 运行时库
+        library = library,
       },
       telemetry = { enable = false },
     },
@@ -619,12 +625,34 @@ require("fidget").setup {
   },
 }
 
+
+require('telescope').setup{
+  defaults = {
+    preview = {
+      wrap = true,  -- 自动换行
+    },
+    mappings = {
+      i = {
+        ["<C-u>"] = require('telescope.actions').preview_scrolling_up,
+        ["<C-d>"] = require('telescope.actions').preview_scrolling_down,
+        ["<C-b>"] = require('telescope.actions').preview_scrolling_up,  -- 整页也可绑定
+        ["<C-f>"] = require('telescope.actions').preview_scrolling_down,
+      },
+      n = {
+        ["<C-u>"] = require('telescope.actions').preview_scrolling_up,
+        ["<C-d>"] = require('telescope.actions').preview_scrolling_down,
+      },
+    },
+  },
+}
+
 -- telescope gd gr gi
 local ok, builtin = pcall(require, 'telescope.builtin')
 if ok then
   vim.keymap.set('n', 'gd', builtin.lsp_definitions, { noremap = true, silent = true })
   vim.keymap.set('n', 'gr', builtin.lsp_references, { noremap = true, silent = true })
   vim.keymap.set('n', 'gi', builtin.lsp_implementations, { noremap = true, silent = true })
+  -- vim.keymap.set('n', 'K', builtin.lsp_references, { noremap = true, silent = true })
   -- vim.keymap.set('n', '<leader>ld', builtin.diagnostics, { noremap = true, silent = true })
   -- vim.keymap.set('n', '<leader>lw', builtin.lsp_workspace_diagnostics, { noremap = true, silent = true })
 end
