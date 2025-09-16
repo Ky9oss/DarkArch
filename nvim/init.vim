@@ -132,6 +132,10 @@ Plug 'nosduco/remote-sshfs.nvim'
 " Interactive Repls
 Plug 'Vigemus/iron.nvim'
 
+" Persistence session
+" Plug 'olimorris/persisted.nvim'
+" Plug 'jedrzejboczar/possession.nvim'
+Plug 'folke/persistence.nvim'
 
 call plug#end()
 
@@ -226,6 +230,34 @@ require("opts.nvimTreeOpts")
 require("before-quit")
 local lspconfig = require('lspconfig')
 local configs = require('lspconfig.configs')
+
+
+-- persistence setup
+require('persistence').setup{
+
+  dir = vim.fn.stdpath("state") .. "/sessions/", -- directory where session files are saved
+  -- minimum number of file buffers that need to be open to save
+  -- Set to 0 to always save
+  need = 1,
+  branch = true, -- use git branch to save session
+
+}
+-- load the session for the current directory
+vim.keymap.set("n", "<leader>qs", function() require("persistence").load() end)
+-- select a session to load
+vim.keymap.set("n", "<leader>qS", function() require("persistence").select() end)
+-- load the last session
+vim.keymap.set("n", "<leader>ql", function() require("persistence").load({ last = true }) end)
+-- stop Persistence => session won't be saved on exit
+vim.keymap.set("n", "<leader>qd", function() require("persistence").stop() end)
+-- auto repair nvim-tree after loading the last session
+vim.api.nvim_create_autocmd("User", {
+  pattern = "PersistenceLoadPost",
+  callback = function()
+    require("nvim-tree.api").tree.open()
+  end,
+})
+
 
 -- plugin:setup({
 --     servers = {
@@ -731,6 +763,18 @@ cmp.setup({
   },
 })
 
+require("nvim-tree").setup({
+  disable_netrw = true,
+  hijack_netrw = true,
+  actions = {
+    open_file = {
+      quit_on_open = false,
+    },
+  },
+  -- 👇关键设置：不要在 session 文件里保存 nvim-tree
+  respect_buf_cwd = true,
+  sync_root_with_cwd = true,
+})
 
 -- Treesitter Plugin Setup 
 require('nvim-treesitter.configs').setup {
