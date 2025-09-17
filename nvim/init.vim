@@ -137,6 +137,14 @@ Plug 'Vigemus/iron.nvim'
 " Plug 'jedrzejboczar/possession.nvim'
 Plug 'folke/persistence.nvim'
 
+" colorful window line
+Plug 'nvim-zh/colorful-winsep.nvim'
+
+" tmux
+Plug 'aserowy/tmux.nvim'
+
+
+
 call plug#end()
 
 " my script
@@ -199,12 +207,12 @@ nnoremap <silent><leader>5 <Cmd>BufferLineGoToBuffer 5<CR>
 nnoremap <silent><leader>6 <Cmd>BufferLineGoToBuffer 6<CR>
 nnoremap <silent><leader>7 <Cmd>BufferLineGoToBuffer 7<CR>
 nnoremap <silent><leader>8 <Cmd>BufferLineGoToBuffer 8<CR>
-nnoremap <silent><leader>l :BufferLineCycleNext<CR>
-nnoremap <silent><leader>h :BufferLineCyclePrev<CR>
-nnoremap <silent><leader>k :BufferLineCloseRight<CR>
-nnoremap <silent><leader>j :BufferLineCloseLeft<CR>
-nnoremap <silent><leader>L :BufferLineMoveNext<CR>
-nnoremap <silent><leader>H :BufferLineMovePrev<CR>
+nnoremap <silent> BN :BufferLineMoveNext<CR>
+nnoremap <silent> BP :BufferLineMovePrev<CR>
+nnoremap <silent><leader>cr :BufferLineCloseRight<CR>
+nnoremap <silent><leader>cl :BufferLineCloseLeft<CR>
+nnoremap <silent><C-n> :BufferLineCycleNext<CR>
+nnoremap <silent><C-p> :BufferLineCyclePrev<CR>
 
 " tagbar
 nmap <F8> :TagbarToggle<CR>
@@ -232,31 +240,6 @@ local lspconfig = require('lspconfig')
 local configs = require('lspconfig.configs')
 
 
--- persistence setup
-require('persistence').setup{
-
-  dir = vim.fn.stdpath("state") .. "/sessions/", -- directory where session files are saved
-  -- minimum number of file buffers that need to be open to save
-  -- Set to 0 to always save
-  need = 1,
-  branch = true, -- use git branch to save session
-
-}
--- load the session for the current directory
-vim.keymap.set("n", "<leader>qs", function() require("persistence").load() end)
--- select a session to load
-vim.keymap.set("n", "<leader>qS", function() require("persistence").select() end)
--- load the last session
-vim.keymap.set("n", "<leader>ql", function() require("persistence").load({ last = true }) end)
--- stop Persistence => session won't be saved on exit
-vim.keymap.set("n", "<leader>qd", function() require("persistence").stop() end)
--- auto repair nvim-tree after loading the last session
-vim.api.nvim_create_autocmd("User", {
-  pattern = "PersistenceLoadPost",
-  callback = function()
-    require("nvim-tree.api").tree.open()
-  end,
-})
 
 
 -- plugin:setup({
@@ -335,6 +318,8 @@ require('remote-sshfs').setup{
 
 require("nvim-autopairs").setup {}
 require("ibl").setup()
+require("tmux").setup()
+require('colorful-winsep').setup()
 require('Comment').setup()
 require("bufferline").setup{}
 require('beacon').setup()
@@ -348,7 +333,7 @@ require("dapui").setup({
         { id = "watches", size = 0.25 },  
       },  
       size = 40,  
-      position = "right", -- 从 "left" 改为 "right"  
+      position = "right",
     },  
     {  
       elements = {  
@@ -1225,5 +1210,31 @@ iron.setup {
 -- iron also has a list of commands, see :h iron-commands for all available commands
 vim.keymap.set('n', '<space>rf', '<cmd>IronFocus<cr>')
 vim.keymap.set('n', '<space>rh', '<cmd>IronHide<cr>')
+
+-- persistence setup
+require('persistence').setup{
+
+  dir = vim.fn.stdpath("state") .. "/sessions/", -- directory where session files are saved
+  -- minimum number of file buffers that need to be open to save
+  -- Set to 0 to always save
+  need = 1,
+  branch = true, -- use git branch to save session
+
+}
+-- load the session for the current directory
+vim.keymap.set("n", "<leader>qs", function() require("persistence").load() end)
+-- select a session to load
+vim.keymap.set("n", "<leader>qS", function() require("persistence").select() end)
+-- load the last session
+vim.keymap.set("n", "<leader>ql", function() require("persistence").load({ last = true }) end)
+-- stop Persistence => session won't be saved on exit
+vim.keymap.set("n", "<leader>qd", function() require("persistence").stop() end)
+-- auto repair nvim-tree after loading the last session
+vim.api.nvim_create_autocmd("User", {
+  pattern = "PersistenceLoadPost",
+  callback = function()
+    require("nvim-tree.api").tree.open()
+  end,
+})
 
 EOF

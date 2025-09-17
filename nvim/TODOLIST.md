@@ -23,20 +23,24 @@ stack traceback:
 - [ ] shift + K 进入了新的文件，导致nvim-tree和minimap乱序和意外退出。
 - [ ] layout fault: minimap got too much layout
 
-## nvim-tree
+## nvim-tree bug
+- [ ] 退出主窗口后，由于存在其他buffer而没有正常退出
 - [ ] fix bug： `shift+K`查看文档退出后，nvim-tree修改了原先的目录结构，将当前文件放到顶部。
 - [ ] bufferline多tab时，nvim-tree只高亮被选中的tab
 - [ ] fix bug: nvim-tree 没有固定根目录，而是随着文件的变动随意跳跃
 
-## vim-plug
+## vim-plug bug
 - [ ] fix bug：telescope被`PlugClean`莫名删除
 
+## persistence bug
+- [ ] persistence 意外退出
 
 # 添加功能
 - [ ] LSP Omnisharp 远程调用
-- [ ] 布局自动恢复
-- [ ] 显示当前绝对路径
+- [x] 布局自动恢复
+- [x] 显示当前绝对路径
 - [x] minimap 自动关闭
+- [ ] 底标显示project名称
 - [ ] 内置shell终端：不要重复加载shell，避免wsl拖慢程序
 - [ ] 内置shell终端：不要esc退出，仅`:q`
 - [ ] 远程LSP，实现跨平台写代码并LSP编译

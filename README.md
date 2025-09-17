@@ -1,14 +1,22 @@
-# Dark Arch: 利用 Tmux + Neovim 打造最强Linux开发环境
+# Dark Arch: 打造最强开发环境
 ![](img/main.png)
 ![](img/index.png)
 > [!IMPORTANT] 
 > 本仓库仅记录具体安装命令，用于个人快速搭建环境，不涉及任何插件二开细节、工具原理、使用方式等解释，请自行辨别。
 
-## 基本环境 - wsl2 + Arch
+# 项目环境
+
+- windows terminal
+- wsl2 & arch linux
+- zsh & ohmyzsh
+- tmux & ohmytmux
+- neovim
+
+# 安装wsl2
 1. 安装`archlinux-xxx.wsl`文件：[https://mirrors.aliyun.com/archlinux/wsl/latest/?spm=a2c6h.25603864.0.0.3b896e31D6YFPc]
 2. `wsl --install --from-file xxx.wsl`安装Arch
 
-## Arch基本配置
+# Arch基本配置
 1. 添加国内镜像：`sh -c 'echo -e "Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/\$repo/os/\$arch\nServer = https://mirrors.aliyun.com/archlinux/\$repo/os/\$arch\nServer = https://mirrors.ustc.edu.cn/archlinux/\$repo/os/\$arch\nServer = https://mirror.sjtu.edu.cn/archlinux/\$repo/os/\$arch" > /etc/pacman.d/mirrorlist'`
 2. 更新系统：`pacman -Syu`
 3. update repo: `pacman -Syy`
@@ -18,17 +26,24 @@
 6. `proxychains`添加代理：`nvim /etc/proxychains.conf`
 7. 安装`ohmyzsh`:`proxychains sh -c "$(proxychains curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"`
 8. 修改`.zshrc`文件（参考该项目的`.zshrc`）
-9. 安装`tpm`：`git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm`
-10. 安装`oh-my-tmux`，随后修改`~/.config/tmux/tmux.conf.local`,参考项目文件`tmux.conf.local`
-```sh
-$ git clone --single-branch https://github.com/gpakosz/.tmux.git "/path/to/oh-my-tmux"
-$ mkdir -p ~/.config/tmux
-$ ln -s /path/to/oh-my-tmux/.tmux.conf ~/.config/tmux/tmux.conf
-$ cp /path/to/oh-my-tmux/.tmux.conf.local ~/.config/tmux/tmux.conf.local
-```
-1.  开启全局代理进入`tmux`,自动安装插件
 
-### 安装paru（只能用于非root环境）
+### 开启`github`权限
+
+```bash
+git config --global credential.helper store
+git config --system credential.helper store
+
+# 从Github 获取Access Token，开启repo权限
+# git push时，要求填写密码。密码填写为Acsess Token即可
+```
+
+### 安装NerdFont字体
+> 以下为linux安装方式。如果使用wsl，请直接在windows terminal上安装字体
+1. 克隆库 `proxychains git clone https://github.com/ryanoasis/nerd-fonts`
+2. 安装字体: `cd nerd-fonts && chmod +x ./install.sh && ./install.sh Hack`
+3. 刷新: `fc-cache -fv`
+
+### （可选）安装paru
 ```sh
 # 创建新用户
 useradd -m builduser
@@ -51,22 +66,44 @@ su root
 pacman -U /home/builduser/paru/paru-2.1.0-1-x86_64.pkg.tar.zst
 ```
 
-### git access
-```bash
-git config --global credential.helper store
-git config --system credential.helper store
 
-# 从Github 获取Access Token，开启repo权限
-# git push时，要求填写密码。密码填写为Acsess Token即可
+# Tmux 配置
+1. 安装`tpm`：`proxychains git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm`
+2. 安装`oh-my-tmux`，随后修改`~/.config/tmux/tmux.conf.local`,参考项目文件`tmux.conf.local`
+```sh
+$ git clone --single-branch https://github.com/gpakosz/.tmux.git "/path/to/oh-my-tmux"
+$ mkdir -p ~/.config/tmux
+$ ln -s /path/to/oh-my-tmux/.tmux.conf ~/.config/tmux/tmux.conf
+$ cp /path/to/oh-my-tmux/.tmux.conf.local ~/.config/tmux/tmux.conf.local
+```
+3. 在`~/.config/tmux/tmux.conf.local`中, 修改以下三个配置为`true`
+```conf
+tmux_conf_update_plugins_on_launch=true
+tmux_conf_update_plugins_on_reload=true
+tmux_conf_uninstall_plugins_on_reload=true
+```
+4. 开启全局代理进入`tmux`,自动安装插件
 
+### 常见错误
+1. 由于代理问题，oh-my-tmux使用tpm自动安装插件可能会失败。
+#### 解决方法
+在`~/.config/tmux/tmux.conf.local`中, 修改以下三个配置为`false`
+```conf
+tmux_conf_update_plugins_on_launch=false
+tmux_conf_update_plugins_on_reload=false
+tmux_conf_uninstall_plugins_on_reload=false
 ```
 
-### 安装NerdFont字体(wsl请用windows安装字体)
-1. 克隆库 `proxychains git clone https://github.com/ryanoasis/nerd-fonts`
-2. 安装字体: `cd nerd-fonts && chmod +x ./install.sh && ./install.sh Hack`
-3. 刷新: `fc-cache -fv`
+在`~/.tmux/plugins`目录下，执行：
+```bash
+proxychains git clone 'https://github.com/tmux-plugins/tmux-copycat'
+proxychains git clone 'https://github.com/tmux-plugins/tmux-cpu'
+proxychains git clone 'https://github.com/tmux-plugins/tmux-resurrect'
+proxychains git clone 'https://github.com/aserowy/tmux.nvim'
+```
 
-## Neovim
+
+# Neovim 配置
 1. 安装`vim-plug`：`proxychains curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim`
 2. 将其他`nvim/`下所有文件复制至`~/.config/nvim/`文件夹中
 3. 重启nvim并使用`:PlugInstall`安装插件
@@ -135,3 +172,9 @@ AuthorizedKeysFile	.ssh/authorized_keys
 ```
 > [!CAUTION]
 > windows里的权限配置很坑，`~/.ssh` `~/.ssh/authorized_keys` 两个文件的权限很容易造成ssh公私钥认证失败。使用`https://github.com/PowerShell/Win32-OpenSSH`所提供的脚本`FixHostFilePermission.ps1`可以解决问题。
+
+# Windows Terminal 配置
+参考`settings.json`，直接使用该配置文件即可。
+
+> [!TIP]
+> 值得留意的是配置中的`sendInput`行为，可以利用这个方式做特殊命令的映射，类似于`kitty/wezterm`的`escape`
