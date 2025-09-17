@@ -2,49 +2,33 @@
 
 ## 其他问题
 - [x] 修复卡顿
-    - 已修复：用于eslint的`ale`卡飞了，单操作2s以上，不确定为什么
-- [ ] redundant double quotes when creating a new line
-- [ ] when use }/]/) should not change the cursor to next symbol. Instead, creat a new symbol
-- [ ] dd时，意外报错：
-```lua
-Error in decoration provider "line" (ns=nvim.treesitter.highlighter):
-Error executing lua: /usr/share/nvim/runtime/lua/vim/treesitter/highlighter.lua:370: Invalid 'end_col': out of range
-stack traceback:
-        [C]: in function 'nvim_buf_set_extmark'
-        /usr/share/nvim/runtime/lua/vim/treesitter/highlighter.lua:370: in function 'fn'
-        /usr/share/nvim/runtime/lua/vim/treesitter/highlighter.lua:232: in function 'for_each_highlight_state'
-        /usr/share/nvim/runtime/lua/vim/treesitter/highlighter.lua:322: in function 'on_line_impl'
-        /usr/share/nvim/runtime/lua/vim/treesitter/highlighter.lua:411: in function </usr/share/nvim/runtime/lua/vim/treesitter/highlighter.lua:405
->
+    - fixed：用于eslint的`ale`卡飞了
+- [x] redundant double quotes when creating a new line
+- [x] when use }/]/) should not change the cursor to next symbol. Instead, creat a new symbol
 
-```
 
 ## 窗口问题
-- [ ] shift + K 进入了新的文件，导致nvim-tree和minimap乱序和意外退出。
-- [ ] layout fault: minimap got too much layout
+- [x] shift + K 进入了新的文件，导致nvim-tree和minimap乱序和意外退出。
 
 ## nvim-tree bug
-- [ ] 退出主窗口后，由于存在其他buffer而没有正常退出
-- [ ] fix bug： `shift+K`查看文档退出后，nvim-tree修改了原先的目录结构，将当前文件放到顶部。
-- [ ] bufferline多tab时，nvim-tree只高亮被选中的tab
-- [ ] fix bug: nvim-tree 没有固定根目录，而是随着文件的变动随意跳跃
+- [x] 退出主窗口后，由于存在其他buffer而没有正常退出(fixed: use `qa`)
+- [x] bufferline多tab时，nvim-tree只高亮被选中的tab
 
 ## vim-plug bug
-- [ ] fix bug：telescope被`PlugClean`莫名删除
+- [x] telescope被`PlugClean`莫名删除 (*fixed: add branch in Plug*)
 
 ## persistence bug
-- [ ] persistence 意外退出
+- [x] persistence 不同项目的状态被混用(*fixed: use alias in zsh*)
 
 # 添加功能
-- [ ] LSP Omnisharp 远程调用
+- [ ] 远程LSP，实现跨平台写代码并LSP编译
 - [x] 布局自动恢复
 - [x] 显示当前绝对路径
 - [x] minimap 自动关闭
-- [ ] 底标显示project名称
-- [ ] 内置shell终端：不要重复加载shell，避免wsl拖慢程序
-- [ ] 内置shell终端：不要esc退出，仅`:q`
-- [ ] 远程LSP，实现跨平台写代码并LSP编译
+- [x] 底标显示project名称
 - [ ]
+
+## (可选)额外功能
 - [ ] 能否实现近乎于chrome的js debuger
 - [ ] git历史，仿github化阅读
 

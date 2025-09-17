@@ -36,6 +36,21 @@ vim.keymap.set('n', '<C-w>k', require('smart-splits').move_cursor_up)
 vim.keymap.set('n', '<C-w>l', require('smart-splits').move_cursor_right)
 
 
+-- lspsaga
+-- vim.api.nvim_del_keymap('n', 'K')
+-- vim.keymap.set('n', 'K', '<cmd>Lspsaga hover_doc<CR>', { noremap = true, silent = true })
+vim.api.nvim_create_autocmd("LspAttach", {
+  callback = function(ev)
+    -- 给所有 LSP buffer 强制设置
+    vim.keymap.set('n', 'K', '<cmd>Lspsaga hover_doc<CR>', {
+      buffer = ev.buf,
+      noremap = true,
+      silent = true,
+    })
+  end,
+})
+
+
 -- telescope
 
 

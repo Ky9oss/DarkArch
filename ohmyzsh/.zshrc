@@ -29,7 +29,7 @@ eval "$(pyenv init - zsh)"
 
 # cargo installation
 # export CARGO_TARGET_DIR="/root/tools/runtime/default_cargo_target"
- export CARGO_TARGET_DIR="./"
+export CARGO_TARGET_DIR="./"
 
 # PATH
 export PATH=$PATH:"/root/tools/runtime/default_cargo_target"
@@ -49,3 +49,26 @@ case ":$PATH:" in
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 # pnpm end
+
+# nvim alais
+alias v='nvim'
+nvim() {
+  if [[ $# -eq 0 ]]; then
+    # 没有参数，直接打开 nvim
+    command nvim
+  else
+    local target=$1
+    if [[ -d $target ]]; then
+      # 参数是目录
+      cd "$target" && command nvim
+    elif [[ -f $target ]]; then
+      # 参数是文件
+      local dir=$(dirname "$target")
+      local file=$(basename "$target")
+      cd "$dir" && command nvim "$file"
+    else
+      # 不是文件也不是目录，直接交给 nvim 处理
+      command nvim "$target"
+    fi
+  fi
+}

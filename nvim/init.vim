@@ -41,7 +41,7 @@ Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'nvim-lua/plenary.nvim'
 
 " \ff \fg
-Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.8' }
+Plug 'nvim-telescope/telescope.nvim' , { 'branch': 'master' } ", { 'tag': '0.1.8' }
 
 " AI plugins. Make neovim like Cursor.
     " Plug 'stevearc/dressing.nvim'
@@ -117,7 +117,6 @@ Plug 'editorconfig/editorconfig-vim'
 
 " restrore session
 " Plug 'rmagatti/auto-session'  " [Bug]: can't restore session
-" Plug 'folke/persistence.nvim' " [Bug]: can't restore session
 
 " omnisharp enhancement
 Plug 'Hoffs/omnisharp-extended-lsp.nvim'
@@ -143,6 +142,18 @@ Plug 'nvim-zh/colorful-winsep.nvim'
 " tmux
 Plug 'aserowy/tmux.nvim'
 
+" Improve LSP
+Plug 'nvimdev/lspsaga.nvim'
+
+" fold
+Plug 'kevinhwang91/promise-async'
+Plug 'kevinhwang91/nvim-ufo'
+
+" Scroll bar
+Plug 'petertriho/nvim-scrollbar'
+
+" Project Management
+Plug 'ahmedkhalf/project.nvim'
 
 
 call plug#end()
@@ -152,20 +163,17 @@ call plug#end()
 " source /root/.config/nvim/vim/n3rdTree.vim
 
 " base config
-set tabstop=4
-set shiftwidth=4
+" set tabstop=4
+" set shiftwidth=4
 set expandtab
 set number
 set laststatus=3
 set termguicolors
 set encoding=UTF-8
 set noshowmode
+set undodir=~/.local/share/nvim/
 let mapleader = "\\"
 
-" statusline
-let g:lightline = {
-    \ 'enable': { 'tabline': 0 },
-    \ }
 
 " minimap
 " let g:minimap_width = 10
@@ -188,15 +196,14 @@ colorscheme tokyonight-night
 " colorscheme aura-dark
 
 " FloaTerm configuration
-nnoremap <leader>sh :FloatermNew --name=myfloat --height=0.8 --width=0.7 --autoclose=2 <CR>
-nnoremap t :FloatermToggle myfloat<CR>
+nnoremap <leader>nsh :FloatermNew --name=myfloat --height=0.8 --width=0.7 --autoclose=2 <CR>
 tnoremap <Esc> <C-\><C-n>:q<CR>
 
 " telescope
 nnoremap <leader>ff <cmd>Telescope find_files<cr>
-nnoremap <leader>fg <cmd>Telescope live_grep<cr>
-nnoremap <leader>fb <cmd>Telescope buffers<cr>
-nnoremap <leader>fh <cmd>Telescope help_tags<cr>
+nnoremap <leader>fg <cmd>Telescope live_grep <cr>
+nnoremap <leader>fb <cmd>Telescope buffers <cr>
+nnoremap <leader>fh <cmd>Telescope help_tags <cr>
 
 "bufferline
 nnoremap <silent><leader>1 <Cmd>BufferLineGoToBuffer 1<CR>
@@ -234,11 +241,14 @@ inoreabbrev <expr> __
 
 lua << EOF
 require("opts.opts")
-require("opts.nvimTreeOpts")
-require("before-quit")
+require("opts.nvim-tree")
+require("opts.nvim-scrollbar")
+require("opts.telescope")
+require("custom-quit")
+require("check-enviroment")
+require("toggle-floaterm")
 local lspconfig = require('lspconfig')
 local configs = require('lspconfig.configs')
-
 
 
 
@@ -315,13 +325,67 @@ require('remote-sshfs').setup{
   },
 }
 
+vim.o.foldcolumn = '0' -- '0' is not bad
+vim.o.foldlevel = 99 -- Using ufo provider need a large value, feel free to decrease the value
+vim.o.foldlevelstart = 99
+vim.o.foldenable = true
+
+-- Using ufo provider need remap `zR` and `zM`. If Neovim is 0.6.1, remap yourself
+vim.keymap.set('n', 'zR', require('ufo').openAllFolds)
+vim.keymap.set('n', 'zM', require('ufo').closeAllFolds)
+vim.keymap.set('n', 'zr', require('ufo').openFoldsExceptKinds)
+vim.keymap.set('n', 'zm', require('ufo').closeFoldsWith)
+
+require('ufo').setup({
+    fold_virt_text_handler = function(virtText, lnum, endLnum, width, truncate)
+        local newVirtText = {}
+        local suffix = (' 󰁂 %d '):format(endLnum - lnum)
+        local sufWidth = vim.fn.strdisplaywidth(suffix)
+        local targetWidth = width - sufWidth
+        local curWidth = 0
+        for _, chunk in ipairs(virtText) do
+            local chunkText = chunk[1]
+            local chunkWidth = vim.fn.strdisplaywidth(chunkText)
+            if targetWidth > curWidth + chunkWidth then
+                table.insert(newVirtText, chunk)
+            else
+                chunkText = truncate(chunkText, targetWidth - curWidth)
+                local hlGroup = chunk[2]
+                table.insert(newVirtText, {chunkText, hlGroup})
+                chunkWidth = vim.fn.strdisplaywidth(chunkText)
+                -- str width returned from truncate() may less than 2nd argument, need padding
+                if curWidth + chunkWidth < targetWidth then
+                    suffix = suffix .. (' '):rep(targetWidth - curWidth - chunkWidth)
+                end
+                break
+            end
+            curWidth = curWidth + chunkWidth
+        end
+        table.insert(newVirtText, {suffix, 'MoreMsg'})
+        return newVirtText
+    end,
+    provider_selector = function(bufnr, filetype, buftype)
+        return {'treesitter', 'indent'}
+    end
+})
+
+require('lspsaga').setup({})
+
+-- project
+require("project_nvim").setup {
+  detection_methods = { "lsp", "pattern" },
+  patterns = { ".git", "_darcs", ".hg", ".bzr", ".svn", "Makefile", "package.json", ".editorconfig" },
+}
+require('telescope').load_extension('projects')
+vim.keymap.set('n', '<leader>fp', function()
+  require('telescope').extensions.projects.projects()
+end, { noremap = true, silent = true, desc = "Find Projects" })
 
 require("nvim-autopairs").setup {}
 require("ibl").setup()
 require("tmux").setup()
 require('colorful-winsep').setup()
 require('Comment').setup()
-require("bufferline").setup{}
 require('beacon').setup()
 require("dapui").setup({
   layouts = {  
@@ -665,19 +729,29 @@ require("fidget").setup {
 
 require('telescope').setup{
   defaults = {
+    layout_config = {  
+      width = 0.8,  
+      height = 0.9,  
+      preview_width = 0.7,
+      -- anchor = "CENTER", 
+      -- anchor_padding = -25,  -- 负值向上调整
+      -- 保留 dropdown 主题的其他默认设置  
+    },  
     preview = {
       wrap = true,  -- 自动换行
     },
     mappings = {
       i = {
-        ["<C-u>"] = require('telescope.actions').preview_scrolling_up,
-        ["<C-d>"] = require('telescope.actions').preview_scrolling_down,
+        ["<C-e>"] = require('telescope.actions').preview_scrolling_left,
+        ["<C-t>"] = require('telescope.actions').preview_scrolling_right,
         ["<C-b>"] = require('telescope.actions').preview_scrolling_up,  -- 整页也可绑定
         ["<C-f>"] = require('telescope.actions').preview_scrolling_down,
       },
       n = {
-        ["<C-u>"] = require('telescope.actions').preview_scrolling_up,
-        ["<C-d>"] = require('telescope.actions').preview_scrolling_down,
+        ["<C-e>"] = require('telescope.actions').preview_scrolling_left,
+        ["<C-t>"] = require('telescope.actions').preview_scrolling_right,
+        ["<C-b>"] = require('telescope.actions').preview_scrolling_up,  -- 整页也可绑定
+        ["<C-f>"] = require('telescope.actions').preview_scrolling_down,
       },
     },
   },
@@ -748,18 +822,6 @@ cmp.setup({
   },
 })
 
-require("nvim-tree").setup({
-  disable_netrw = true,
-  hijack_netrw = true,
-  actions = {
-    open_file = {
-      quit_on_open = false,
-    },
-  },
-  -- 👇关键设置：不要在 session 文件里保存 nvim-tree
-  respect_buf_cwd = true,
-  sync_root_with_cwd = true,
-})
 
 -- Treesitter Plugin Setup 
 require('nvim-treesitter.configs').setup {
@@ -938,7 +1000,6 @@ vim.api.nvim_set_keymap('n', 'g#', [[g#<Cmd>lua require('hlslens').start()<CR>]]
 
 vim.api.nvim_set_keymap('n', '<Leader>l', '<Cmd>noh<CR>', kopts)
 
-require("keys")
 
 local api = require('remote-sshfs.api')
 vim.keymap.set('n', '<leader>rc', api.connect, {})
@@ -962,164 +1023,6 @@ vim.keymap.set("n", "<leader>rg", function()
   builtin.live_grep()
  end
 end, {})
-
--- require("remote-lsp").setup({
---     python_bin = "/root/.pyenv/shims/python3",
---     servers = {
---         omnisharp = { 
---             cmd = {
---                     'OmniSharp.exe',
---                     '-z', -- https://github.com/OmniSharp/omnisharp-vscode/pull/4300
---                     '--hostPID',
---                     tostring(vim.fn.getpid()),
---                     'DotNet:enablePackageRestore=false',
---                     '--encoding',
---                     'utf-8',
---                     '--languageserver',
---             },
---           file_types = {'cs', 'vb'},
---           root_dir = function(bufnr, on_dir)
---             local fname = vim.api.nvim_buf_get_name(bufnr)
---             on_dir(
---               util.root_pattern '*.sln'(fname)
---                 or util.root_pattern '*.csproj'(fname)
---                 or util.root_pattern 'omnisharp.json'(fname)
---                 or util.root_pattern 'function.json'(fname)
---             )
---           end,
---
---           init_options = {},
---           capabilities = {
---             workspace = {
---               workspaceFolders = false, -- https://github.com/OmniSharp/omnisharp-roslyn/issues/909
---             },
---           },
---           settings = {
---             FormattingOptions = {
---               -- Enables support for reading code style, naming convention and analyzer
---               -- settings from .editorconfig.
---               EnableEditorConfigSupport = true,
---               -- Specifies whether 'using' directives should be grouped and sorted during
---               -- document formatting.
---               OrganizeImports = nil,
---             },
---             MsBuild = {
---               -- If true, MSBuild project system will only load projects for files that
---               -- were opened in the editor. This setting is useful for big C# codebases
---               -- and allows for faster initialization of code navigation features only
---               -- for projects that are relevant to code that is being edited. With this
---               -- setting enabled OmniSharp may load fewer projects and may thus display
---               -- incomplete reference lists for symbols.
---               LoadProjectsOnDemand = nil,
---             },
---             RoslynExtensionsOptions = {
---               -- Enables support for roslyn analyzers, code fixes and rulesets.
---               EnableAnalyzersSupport = nil,
---               -- Enables support for showing unimported types and unimported extension
---               -- methods in completion lists. When committed, the appropriate using
---               -- directive will be added at the top of the current file. This option can
---               -- have a negative impact on initial completion responsiveness,
---               -- particularly for the first few completion sessions after opening a
---               -- solution.
---               EnableImportCompletion = nil,
---               -- Only run analyzers against open files when 'enableRoslynAnalyzers' is
---               -- true
---               AnalyzeOpenDocumentsOnly = nil,
---               -- Enables the possibility to see the code in external nuget dependencies
---               EnableDecompilationSupport = nil,
---             },
---             RenameOptions = {
---               RenameInComments = nil,
---               RenameOverloads = nil,
---               RenameInStrings = nil,
---             },
---             Sdk = {
---               -- Specifies whether to include preview versions of the .NET SDK when
---               -- determining which version to use for project loading.
---               IncludePrereleases = true,
---             },
---             
---           },
---
---         },
---     },
--- })
--- vim.lsp.config("omnisharp", {
---     cmd = {
---         'OmniSharp.exe',
---         '-z', -- https://github.com/OmniSharp/omnisharp-vscode/pull/4300
---         '--hostPID',
---         tostring(vim.fn.getpid()),
---         'DotNet:enablePackageRestore=false',
---         '--encoding',
---         'utf-8',
---         '--languageserver',
---     },
---     file_types = {'cs', 'vb'},
---     root_dir = function(bufnr, on_dir)
---     local fname = vim.api.nvim_buf_get_name(bufnr)
---     on_dir(
---       util.root_pattern '*.sln'(fname)
---         or util.root_pattern '*.csproj'(fname)
---         or util.root_pattern 'omnisharp.json'(fname)
---         or util.root_pattern 'function.json'(fname)
---     )
---     end,
---
---     init_options = {},
---     capabilities = {
---     workspace = {
---       workspaceFolders = false, -- https://github.com/OmniSharp/omnisharp-roslyn/issues/909
---     },
---     },
---     settings = {'Vigemus/iron.nvim'
---     FormattingOptions = {
---       -- Enables support for reading code style, naming convention and analyzer
---       -- settings from .editorconfig.
---       EnableEditorConfigSupport = true,
---       -- Specifies whether 'using' directives should be grouped and sorted during
---       -- document formatting.
---       OrganizeImports = nil,
---     },
---     MsBuild = {
---       -- If true, MSBuild project system will only load projects for files that
---       -- were opened in the editor. This setting is useful for big C# codebases
---       -- and allows for faster initialization of code navigation features only
---       -- for projects that are relevant to code that is being edited. With this
---       -- setting enabled OmniSharp may load fewer projects and may thus display
---       -- incomplete reference lists for symbols.
---       LoadProjectsOnDemand = nil,
---     },
---     RoslynExtensionsOptions = {
---       -- Enables support for roslyn analyzers, code fixes and rulesets.
---       EnableAnalyzersSupport = nil,
---       -- Enables support for showing unimported types and unimported extension
---       -- methods in completion lists. When committed, the appropriate using
---       -- directive will be added at the top of the current file. This option can
---       -- have a negative impact on initial completion responsiveness,
---       -- particularly for the first few completion sessions after opening a
---       -- solution.
---       EnableImportCompletion = nil,
---       -- Only run analyzers against open files when 'enableRoslynAnalyzers' is
---       -- true
---       AnalyzeOpenDocumentsOnly = nil,
---       -- Enables the possibility to see the code in external nuget dependencies
---       EnableDecompilationSupport = nil,
---     },
---     RenameOptions = {
---       RenameInComments = nil,
---       RenameOverloads = nil,
---       RenameInStrings = nil,
---     },
---     Sdk = {
---       -- Specifies whether to include preview versions of the .NET SDK when
---       -- determining which version to use for project loading.
---       IncludePrereleases = true,
---     },
---
---     },
---     -- You can set root_dir or root_markers here and it will still work with remote-lsp.nvim plugin
--- })
 
 local iron = require("iron.core")
 local view = require("iron.view")
@@ -1222,11 +1125,11 @@ require('persistence').setup{
 
 }
 -- load the session for the current directory
-vim.keymap.set("n", "<leader>qs", function() require("persistence").load() end)
+vim.keymap.set("n", "<leader>qs", function() require("persistence").save() end)
 -- select a session to load
 vim.keymap.set("n", "<leader>qS", function() require("persistence").select() end)
 -- load the last session
-vim.keymap.set("n", "<leader>ql", function() require("persistence").load({ last = true }) end)
+vim.keymap.set("n", "<leader>ql", function() require("persistence").load() end)
 -- stop Persistence => session won't be saved on exit
 vim.keymap.set("n", "<leader>qd", function() require("persistence").stop() end)
 -- auto repair nvim-tree after loading the last session
@@ -1236,5 +1139,34 @@ vim.api.nvim_create_autocmd("User", {
     require("nvim-tree.api").tree.open()
   end,
 })
+
+-- statusline
+local project= require("project_nvim.project") 
+local project_root_path = project.get_project_root() 
+local project_name = "[ " .. project_root_path:match("([^/]+)$"):upper() .. " ]"
+vim.g.lightline = {
+  active = {
+    left = {
+      { "mode", "paste" },
+      { "readonly", "project_name", "filename", "modified" },
+    },
+    right = {
+      { "lineinfo" },
+      { "percent" },
+      { "project", "fileformat", "fileencoding", "filetype"}
+
+    }
+  },
+  component = {
+    project = project_root_path,
+    project_name = project_name,
+  },
+  enable = {
+    tabline = 0,
+  },
+}
+
+
+require("keys")
 
 EOF

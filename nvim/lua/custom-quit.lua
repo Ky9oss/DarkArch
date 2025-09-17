@@ -1,0 +1,26 @@
+-- Failed because this code trigger before quit, when the window not quit
+-- vim.api.nvim_create_autocmd("QuitPre", {
+--   callback = function()
+--     if vim.fn.exists(":NvimTreeClose") == 2 then 
+--       if #vim.api.nvim_list_wins() == 1 and require("nvim-tree.utils").is_nvim_tree_buf() then
+--         pcall(vim.cmd, "silent! NvimTreeClose") 
+--       end 
+--     end
+--   end,
+-- })
+--
+-- 
+-- vim.api.nvim_create_autocmd("WinClosed", {
+--   callback = function()
+--     -- 检查是否已经在退出过程中
+--     if vim.v.exiting ~= vim.NIL then
+--       return
+--     end
+--     -- 延迟一点时间让窗口状态稳定
+--     vim.defer_fn(function()
+--       if #vim.api.nvim_list_wins() == 1 and require("nvim-tree.utils").is_nvim_tree_buf() then
+--         vim.cmd("qa")
+--       end 
+--     end, 20) -- 20ms 延迟，按需调整
+--   end,
+-- })

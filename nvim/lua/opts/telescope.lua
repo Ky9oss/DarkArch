@@ -1,0 +1,18 @@
+-- local dropdown_opts = require('telescope.themes').get_dropdown({  
+--   layout_config = {  
+--     width = 0.8,  
+--     height = 0.9,  
+--     preview_height = 0.9,
+--     -- anchor = "CENTER", 
+--     -- anchor_padding = -25,  -- 负值向上调整
+--     -- 保留 dropdown 主题的其他默认设置  
+--     preview_cutoff = 1,
+--   }  
+-- })
+-- vim.keymap.set('n', '<leader>ff', function()  
+--   require('telescope.builtin').find_files(dropdown_opts)  
+-- end, { desc = 'Find files with dropdown theme' })  
+--   
+-- vim.keymap.set('n', '<leader>fg', function()  
+--   require('telescope.builtin').live_grep(dropdown_opts)  
+-- end, { desc = 'Live grep with dropdown theme' })
