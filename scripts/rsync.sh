@@ -33,15 +33,13 @@ rsync -av --delete --progress \
       $SRC_BLOG $GH_BLOG
 
 rsync -av --delete --progress \
-      --exclude='package-lock.json' \
       --exclude='*.log' \
       --exclude='*.swp' \
       --exclude='*.tmp' \
       --exclude='*.bak' \
+      --exclude='**/.git/' \
+      --exclude='**/.github/' \
       --exclude='.env' \
       --exclude='.env.production' \
-      --exclude='node_modules/' \
-      --exclude='dist/' \
-      --exclude='.output/' \
       $SRC_PLUGGED $DEST_PLUGGED
 

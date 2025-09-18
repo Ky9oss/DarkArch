@@ -5,7 +5,7 @@
 - [ ] buffer id error
 
 # 添加功能
-- [ ] 远程LSP
+- [ ] 远程LSP + nvim-tree 支持
 - [ ]
 
 ## (可选)额外功能
