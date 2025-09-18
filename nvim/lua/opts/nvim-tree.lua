@@ -11,7 +11,7 @@ local MyCustomDecorator = require("nvim-tree.api").decorator.UserDecorator:exten
   
 function MyCustomDecorator:new()  
   self.enabled = true  
-  self.highlight_range = "name"  -- 或者 "all", "icon", "none"  
+  self.highlight_range = "all"  -- 或者 "all", "icon", "none"  
   self.icon_placement = "none"  
 end  
   
