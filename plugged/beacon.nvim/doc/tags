@@ -1,0 +1,7 @@
+beacon	beacon.txt	/*beacon*
+beacon-api	beacon.txt	/*beacon-api*
+beacon-config	beacon.txt	/*beacon-config*
+beacon-highlight-cursor()	beacon.txt	/*beacon-highlight-cursor()*
+beacon-tips	beacon.txt	/*beacon-tips*
+beacon.txt	beacon.txt	/*beacon.txt*
+hl-Beacon	beacon.txt	/*hl-Beacon*

@@ -1,0 +1,12 @@
+vendor/
+!vendor/.placeholder
+**/*.so
+**/*.dll
+doc/tags
+**/.luarc.json
+
+
+# Added by cargo
+
+/target
+Cargo.lock
