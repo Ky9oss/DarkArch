@@ -1,31 +1,11 @@
 # 修复Bug
 
-## 其他问题
-- [x] 修复卡顿
-    - fixed：用于eslint的`ale`卡飞了
-- [x] redundant double quotes when creating a new line
-- [x] when use }/]/) should not change the cursor to next symbol. Instead, creat a new symbol
+## distant.nvim
 
-
-## 窗口问题
-- [x] shift + K 进入了新的文件，导致nvim-tree和minimap乱序和意外退出。
-
-## nvim-tree bug
-- [x] 退出主窗口后，由于存在其他buffer而没有正常退出(fixed: use `qa`)
-- [x] bufferline多tab时，nvim-tree只高亮被选中的tab
-
-## vim-plug bug
-- [x] telescope被`PlugClean`莫名删除 (*fixed: add branch in Plug*)
-
-## persistence bug
-- [x] persistence 不同项目的状态被混用(*fixed: use alias in zsh*)
+- [ ] buffer id error
 
 # 添加功能
-- [ ] 远程LSP，实现跨平台写代码并LSP编译
-- [x] 布局自动恢复
-- [x] 显示当前绝对路径
-- [x] minimap 自动关闭
-- [x] 底标显示project名称
+- [ ] 远程LSP
 - [ ]
 
 ## (可选)额外功能
@@ -39,32 +19,15 @@
 # 有用的快捷命令
 
 - 打印当前所有buffer的名称：`:echo map(range(1, bufnr('$')), 'bufname(v:val)')`
+- 测试远程LSP连通性：`echo -e "Content-Length: 0\r\n\r\n" | nc 127.0.0.1 5000`
 
-# 远程LSP
+# 一些坑点
 
-## 方法一：手动配置
-```bash
-socat TCP-LISTEN:6000,reuseaddr,fork EXEC:"omnisharp.exe -lsp"
-```
+## 关于LSP
 
-```lua
-require'lspconfig'.omnisharp.setup{
-    cmd = {"nc", "windows-host", "6000"},
-    root_dir = require'lspconfig'.util.root_pattern("*.sln", "*.csproj"),
-}
+> [!TIP]
+> 客户端通过RPC向LSP传递配置信息、项目路径等基础信息，而不是源代码(我之前误解了)。LSP根据**项目路径**去检查解析项目结构即代码。
+> 原理上，如果一个机器上没有项目文件，则不能使用LSP。所以远程LSP必须要远程同步项目文件
 
+- LspInfo意外消失: 假如Lsp运行失败，则在LspInfo的Active Clients /Enabled Configuration 中, 都找不到对应LSP的身影，这是正常的。
 
-```
-
-## 方法二：distant.nvim
-
-# 调试方法
-neovim内置性能分析器：
-```
-:profile start profile.log
-:profile func *
-:profile file *
-" 正常操作一段时间
-:profile pause
-:noautocmd qall!
-```

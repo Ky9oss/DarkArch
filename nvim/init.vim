@@ -106,9 +106,6 @@ Plug 'ya2s/nvim-cursorline'
 " better glance at matched information
 Plug 'kevinhwang91/nvim-hlslens'
 
-" minimap
-" Plug 'wfxr/minimap.vim'
-
 " Linter
 " Plug 'dense-analysis/ale'
 
@@ -123,10 +120,6 @@ Plug 'Hoffs/omnisharp-extended-lsp.nvim'
 
 " relative line number
 Plug 'sitiom/nvim-numbertoggle'
-
-" remote lsp
-Plug 'nosduco/remote-sshfs.nvim'
-"Plug 'Chayanon-Ninyawee/remote-lsp.nvim'
 
 " Interactive Repls
 Plug 'Vigemus/iron.nvim'
@@ -155,6 +148,8 @@ Plug 'petertriho/nvim-scrollbar'
 " Project Management
 Plug 'ahmedkhalf/project.nvim'
 
+" Remote Dev
+Plug 'chipsenkbeil/distant.nvim', { 'branch': 'v0.3' }
 
 call plug#end()
 
@@ -263,54 +258,6 @@ local configs = require('lspconfig.configs')
 --     }
 -- })
 
-require('telescope').load_extension 'remote-sshfs'
-
-require('remote-sshfs').setup{
-  connections = {
-    ssh_configs = { -- which ssh configs to parse for hosts list
-      vim.fn.expand "$HOME" .. "/.ssh/config",
-      "/etc/ssh/ssh_config",
-      -- "/path/to/custom/ssh_config"
-    },
-    ssh_known_hosts = vim.fn.expand "$HOME" .. "/.ssh/known_hosts",
-    -- NOTE: Can define ssh_configs similarly to include all configs in a folder
-    -- ssh_configs = vim.split(vim.fn.globpath(vim.fn.expand "$HOME" .. "/.ssh/configs", "*"), "\n")
-    sshfs_args = { -- arguments to pass to the sshfs command
-      "-o reconnect",
-      "-o ConnectTimeout=5",
-    },
-  },
-  mounts = {
-    base_dir = vim.fn.expand "$HOME" .. "/.sshfs/", -- base directory for mount points
-    unmount_on_exit = true, -- run sshfs as foreground, will unmount on vim exit
-  },
-  handlers = {
-    on_connect = {
-      change_dir = true, -- when connected change vim working directory to mount point
-    },
-    on_disconnect = {
-      clean_mount_folders = false, -- remove mount point folder on disconnect/unmount
-    },
-    on_edit = {}, -- not yet implemented
-  },
-  ui = {
-    select_prompts = false, -- not yet implemented
-    confirm = {
-      connect = true, -- prompt y/n when host is selected to connect to
-      change_dir = false, -- prompt y/n to change working directory on connection (only applicable if handlers.on_connect.change_dir is enabled)
-    },
-  },
-  log = {
-    enabled = false, -- enable logging
-    truncate = false, -- truncate logs
-    types = { -- enabled log types
-      all = false,
-      util = false,
-      handler = false,
-      sshfs = false,
-    },
-  },
-}
 
 vim.o.foldcolumn = '0' -- '0' is not bad
 vim.o.foldlevel = 99 -- Using ufo provider need a large value, feel free to decrease the value
@@ -374,6 +321,7 @@ require("tmux").setup()
 require('colorful-winsep').setup()
 require('Comment').setup()
 require('beacon').setup()
+require("distant"):setup()
 require("dapui").setup({
   layouts = {  
     {  
@@ -445,6 +393,31 @@ require('lspconfig').rust_analyzer.setup{
 	}
 }
 
+-- omnisharp
+local lspconfig = require("lspconfig")
+local configs = require("lspconfig.configs")
+local util = require("lspconfig/util")
+
+if not configs.omnisharp_remote then
+  configs.omnisharp_remote = {
+    default_config = {
+      cmd = { "nc", "127.0.0.1", "5000" },  -- 直连远程
+      filetypes = { "cs", "vb" },
+      root_dir = util.root_pattern(".git", "*.sln", "*.csproj"),
+      single_file_support = true,
+    },
+  }
+end
+
+lspconfig.omnisharp_remote.setup {
+  on_attach = function(client, bufnr)
+    print("✅ attached to omnisharp_remote on buffer " .. bufnr)
+  end,
+}
+
+
+
+lspconfig.omnisharp_remote.setup {}
 require("lspconfig").pylsp.setup({
   cmd = { "pylsp" },
   on_new_config = function(new_config, root_dir)
@@ -987,30 +960,6 @@ vim.api.nvim_set_keymap('n', 'g#', [[g#<Cmd>lua require('hlslens').start()<CR>]]
 
 vim.api.nvim_set_keymap('n', '<Leader>l', '<Cmd>noh<CR>', kopts)
 
-
-local api = require('remote-sshfs.api')
-vim.keymap.set('n', '<leader>rc', api.connect, {})
-vim.keymap.set('n', '<leader>rd', api.disconnect, {})
-vim.keymap.set('n', '<leader>re', api.edit, {})
-
--- (optional) Override telescope find_files and live_grep to make dynamic based on if connected to host
-local builtin = require("telescope.builtin")
-local connections = require("remote-sshfs.connections")
-vim.keymap.set("n", "<leader>rf", function()
- if connections.is_connected() then
-  api.find_files()
- else
-  builtin.find_files()
- end
-end, {})
-vim.keymap.set("n", "<leader>rg", function()
- if connections.is_connected() then
-  api.live_grep()
- else
-  builtin.live_grep()
- end
-end, {})
-
 local iron = require("iron.core")
 local view = require("iron.view")
 local common = require("iron.fts.common")
@@ -1128,9 +1077,16 @@ vim.api.nvim_create_autocmd("User", {
 })
 
 -- statusline
-local project= require("project_nvim.project") 
+local project = require("project_nvim.project") 
 local project_root_path = project.get_project_root() 
-local project_name = "[ " .. project_root_path:match("([^/]+)$"):upper() .. " ]"
+local project_name = ""
+
+if project_root_path == nil then
+  project_root_path = ""
+else
+  project_name = "[ " .. project_root_path:match("([^/\\]+)$"):upper() .. " ]"
+end
+
 vim.g.lightline = {
   active = {
     left = {
