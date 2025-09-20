@@ -23,11 +23,10 @@
 3. update repo: `pacman -Syy`
 3. 安装基本工具：`pacman -S --needed base-devel git curl wget unzip zip gdb lib32-glibc lib32-gcc-libs net-tools openssh`
 4. 安装常用工具：`pacman -S zsh fzf ripgrep rsync fd jq bat vim neovim tmux proxychains-ng zoxide fontconfig nodejs universal-ctags nodejs npm openssh `
-5. 安装插件工具：`cargo install --locked code-minimap`
-6. `proxychains`添加代理：`nvim /etc/proxychains.conf`
-7. 安装`ohmyzsh`:`proxychains sh -c "$(proxychains curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"`
-8. 修改`.zshrc`文件（参考该项目的`.zshrc`）
-9. 修改`/etc/locale.gen`，解注释：`en_US.UTF-8 UTF-8`, 运行`locale-gen`  
+5. `proxychains`添加代理：`nvim /etc/proxychains.conf`
+6. 安装`ohmyzsh`:`proxychains sh -c "$(proxychains curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"`
+7. 修改`.zshrc`文件（参考该项目的`.zshrc`）
+8. 修改`/etc/locale.gen`，解注释：`en_US.UTF-8 UTF-8`, 运行`locale-gen`  
 
 ### 开启`github`权限
 
@@ -38,12 +37,6 @@ git config --system credential.helper store
 # 从Github 获取Access Token，开启repo权限
 # git push时，要求填写密码。密码填写为Acsess Token即可
 ```
-
-### 安装NerdFont字体
-> 以下为linux安装方式。如果使用wsl，请直接在windows terminal上安装字体
-1. 克隆库 `proxychains git clone https://github.com/ryanoasis/nerd-fonts`
-2. 安装字体: `cd nerd-fonts && chmod +x ./install.sh && ./install.sh Hack`
-3. 刷新: `fc-cache -fv`
 
 ### （可选）安装paru
 ```sh
@@ -57,9 +50,6 @@ visudo # 去掉注释 %wheel ALL=(ALL:ALL) ALL
 su builduser
 cd
 
-# 安装环境
-proxychains curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-
 # 安装paru
 proxychains git clone https://aur.archlinux.org/paru.git
 cd paru
@@ -68,23 +58,65 @@ su root
 pacman -U /home/builduser/paru/paru-2.1.0-1-x86_64.pkg.tar.zst
 ```
 
+# Ubuntu & Debian 配置
+```bash
+# 1. 安装常用工具
+sudo apt update && sudo apt install -y build-essential gcc g++ make cmake autoconf automake libtool pkg-config libc6 libc6-dev libstdc++6 libssl-dev libffi-dev zlib1g zlib1g-dev wget curl git unzip net-tools libevent-dev libncurses-dev
+
+# 2. 安装常用工具
+sudo apt-get install -y zsh fzf ripgrep rsync jq bat zoxide fontconfig nodejs universal-ctags nodejs npm proxychains-ng
+
+# 3. 安装重要工具（由于apt版本管理滞后，部分重要软件手动安装新版）
+# ohmyzsh
+proxychains4 sh -c "$(proxychains4 curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+mkdir ~/tools/common && cd ~/tools/common && proxychains git clone https://github.com/tmux/tmux && cd tmux && proxychains4 sh autogen.sh && ./configure && make
+cd ~/tools/common && git clone --single-branch https://github.com/gpakosz/.tmux.git oh-my-tmux && cd oh-my-tmux
+
+# tmux
+mkdir -p ~/.config/tmux
+ln -s ${PWD}/.tmux.conf ~/.config/tmux/tmux.conf 
+cp ${PWD}/.tmux.conf.local ~/.config/tmux/tmux.conf.local
+mkdir -p ~/.tmux/plugins && cd ~/.tmux/plugins && proxychains git clone 'https://github.com/tmux-plugins/tmux-copycat' && proxychains git clone 'https://github.com/tmux-plugins/tmux-cpu' && proxychains git clone 'https://github.com/tmux-plugins/tmux-resurrect' && proxychains git clone 'https://github.com/aserowy/tmux.nvim'
+
+# pyenv
+proxychains4 curl -fsSL https://pyenv.run | proxychains4 bash
+source ~/.zshrc && proxychains pyenv install 3.13.6 && pyenv global 3.13.6
+
+# rust
+proxychains4 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | proxychains4 sh
+
+# neovim
+cd ~/tools/common && proxychains wget https://github.com/neovim/neovim/releases/download/v0.11.4/nvim-linux-x86_64.tar.gz && tar -xvzf nvim-linux-x86_64.tar.gz && rm nvim-linux-x86_64.tar.gz
+cd ~/tools/common/nvim-linux-x86_64/bin/ && echo 'export PATH='${PWD}':$PATH' >> ~/.zshrc
+source ~/.zshrc
+
+
+# 4. 更新配置
+cd ~/tools/common && proxychains4 git clone https://github.com/Ky9oss/DarkArch && cd DarkArch
+cp ./ohmyzsh/.zshrc ~/.zshrc && cd ~/tools/common/nvim-linux-x86_64/bin/ && echo 'export PATH='${PWD}':$PATH' >> ~/.zshrc
+cp ./tmux/tmux.conf.local ~/.config/tmux/tmux.conf.local
+cp -r ./nvim ~/.config/nvim
+```
+
+# Ohmyzsh 配置
+```sh
+mkdir -p ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins
+proxychains git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+proxychains git clone https://github.com/zsh-users/zsh-autosuggestions.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+proxychains git clone https://github.com/jeffreytse/zsh-vi-mode.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-vi-mode
+source ~/.zshrc
+```
 
 # Tmux 配置
-1. 安装`tpm`：`proxychains git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm`
+1. 安装`tpm`：`mkdir -p ~/.tmux/plugins/tpm && proxychains git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm`
 2. 安装`oh-my-tmux`，随后修改`~/.config/tmux/tmux.conf.local`,参考项目文件`tmux.conf.local`
 ```sh
-$ git clone --single-branch https://github.com/gpakosz/.tmux.git "/path/to/oh-my-tmux"
-$ mkdir -p ~/.config/tmux
-$ ln -s /path/to/oh-my-tmux/.tmux.conf ~/.config/tmux/tmux.conf
-$ cp /path/to/oh-my-tmux/.tmux.conf.local ~/.config/tmux/tmux.conf.local
+cd ~/tools/common && git clone --single-branch https://github.com/gpakosz/.tmux.git oh-my-tmux && cd oh-my-tmux
+mkdir -p ~/.config/tmux
+ln -s ${PWD}/.tmux.conf ~/.config/tmux/tmux.conf 
+cp ${PWD}/.tmux.conf.local ~/.config/tmux/tmux.conf.local
+mkdir -p ~/.tmux/plugins && cd ~/.tmux/plugins && proxychains git clone 'https://github.com/tmux-plugins/tmux-copycat' && proxychains git clone 'https://github.com/tmux-plugins/tmux-cpu' && proxychains git clone 'https://github.com/tmux-plugins/tmux-resurrect' && proxychains git clone 'https://github.com/aserowy/tmux.nvim'
 ```
-3. 在`~/.config/tmux/tmux.conf.local`中, 修改以下三个配置为`true`
-```conf
-tmux_conf_update_plugins_on_launch=true
-tmux_conf_update_plugins_on_reload=true
-tmux_conf_uninstall_plugins_on_reload=true
-```
-4. 开启全局代理进入`tmux`,自动安装插件
 
 ### 常见错误
 1. 由于代理问题，oh-my-tmux使用tpm自动安装插件可能会失败。
@@ -115,7 +147,8 @@ proxychains git clone 'https://github.com/aserowy/tmux.nvim'
 1. `MasonInstall marksman`
 
 ### Neovim-rust
-1. 使用`mason`安装：`:MasonInstall rust-analyzer codelldb`
+1. 安装环境：`proxychains curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh`
+2. 使用`mason`安装：`:MasonInstall rust-analyzer codelldb`
 
 ### Neovim-python
 1. install pyenv: `proxychains curl -fsSL https://pyenv.run | proxychains bash`
