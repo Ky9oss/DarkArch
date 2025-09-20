@@ -6,10 +6,11 @@
 
 # 项目环境
 
-- windows terminal
-- wsl2 & arch linux
-- zsh & ohmyzsh
-- tmux & ohmytmux
+- linux kitty || windows terminal
+- wsl2 with arch linux
+- debian 13
+- zsh && ohmyzsh
+- tmux && ohmytmux
 - neovim
 
 # 安装wsl2
@@ -26,6 +27,7 @@
 6. `proxychains`添加代理：`nvim /etc/proxychains.conf`
 7. 安装`ohmyzsh`:`proxychains sh -c "$(proxychains curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"`
 8. 修改`.zshrc`文件（参考该项目的`.zshrc`）
+9. 修改`/etc/locale.gen`，解注释：`en_US.UTF-8 UTF-8`, 运行`locale-gen`  
 
 ### 开启`github`权限
 
@@ -172,6 +174,64 @@ AuthorizedKeysFile	.ssh/authorized_keys
 ```
 > [!CAUTION]
 > windows里的权限配置很坑，`~/.ssh` `~/.ssh/authorized_keys` 两个文件的权限很容易造成ssh公私钥认证失败。使用`https://github.com/PowerShell/Win32-OpenSSH`所提供的脚本`FixHostFilePermission.ps1`可以解决问题。
+
+# Kitty 配置
+1. 安装环境：
+```bash
+# 由于kitty需要使用GPU，需要给WSL2添加GPU支持：https://www.intel.com/content/www/us/en/docs/oneapi/installation-guide-linux/2023-0/configure-wsl-2-for-gpu-workflows.html
+# 因此必须使用特定Linux发行版（ubuntu20.04 / 22.04)
+proxychains wsl --install -d Ubuntu-22.04
+
+# Step 0. add mirrors
+sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak
+sudo vim /etc/apt/sources.list
+# deb http://mirrors.aliyun.com/ubuntu/ jammy main restricted universe multiverse
+# deb http://mirrors.aliyun.com/ubuntu/ jammy-updates main restricted universe multiverse
+# deb http://mirrors.aliyun.com/ubuntu/ jammy-backports main restricted universe multiverse
+# deb http://mirrors.aliyun.com/ubuntu/ jammy-security main restricted universe multiverse
+
+sudo apt update
+sudo apt upgrade -y
+
+# Step 1. Add package repository
+sudo apt-get install -y gpg-agent wget proxychains
+proxychains wget -qO - https://repositories.intel.com/graphics/intel-graphics.key | sudo gpg --dearmor --output /usr/share/keyrings/intel-graphics.gpg
+echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/intel-graphics.gpg] https://repositories.intel.com/graphics/ubuntu focal-devel main' | sudo tee  /etc/apt/sources.list.d/intel.gpu.focal.list
+
+# Step 2. Install runtime and development (optional) packages
+sudo apt-get install \
+  intel-opencl-icd \
+  intel-level-zero-gpu level-zero \
+  intel-media-va-driver-non-free libmfx1 libmfxgen1 libvpl2 \
+  libegl-mesa0 libegl1-mesa libegl1-mesa-dev libgbm1 libgl1-mesa-dev libgl1-mesa-dri \
+  libglapi-mesa libgles2-mesa-dev libglx-mesa0 libigdgmm11 libxatracker2 mesa-va-drivers \
+  mesa-vdpau-drivers mesa-vulkan-drivers va-driver-all
+
+# Step 3: Configure permissions: check https://www.intel.com/content/www/us/en/docs/oneapi/installation-guide-linux/2023-0/configure-wsl-2-for-gpu-workflows.html for more
+
+# Step 4. Verify installation
+sudo apt-get install clinfo mesa-utils
+clinfo
+glxinfo | grep "renderer string"
+# OpenGL renderer string: D3D12 (Intel(R) UHD Graphics)
+```
+2. 安装kitty：
+```bash
+proxychains wget https://sw.kovidgoyal.net/kitty/installer.sh && chmod +x ./installer.sh && proxychains ./installer.sh
+echo 'export PATH="$PATH:$HOME/.local/kitty.app/bin"' > ~/.bashrc && source ~/.bashrc
+sudo apt install -y xdg-desktop-portal xdg-desktop-portal-gtk libnotify-bin
+
+# 修复dbus报错
+systemctl --user start xdg-desktop-portal.service systemctl --user start xdg-desktop-portal-gtk.service
+
+# 修复notify报错
+sudo apt install -y dunst libnotify-bin
+
+# 预期效果：
+# [0.598] Could not move child process into a systemd scope: [Errno 30] Failed to call StartTransientUnit: org.freedesktop.DBus.Error.PropertyReadOnly: Cannot set property OOMPolicy, or unknown property.
+# 该报错不影响实际使用，暂不解决 
+```
+3. windows使用计划任务, 实现开机自启动`scripts/wsl_kitty.ps1`脚本
 
 # Windows Terminal 配置
 参考`settings.json`，直接使用该配置文件即可。
