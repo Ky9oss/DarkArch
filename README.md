@@ -22,7 +22,7 @@
 2. 更新系统：`pacman -Syu`
 3. update repo: `pacman -Syy`
 3. 安装基本工具：`pacman -S --needed base-devel git curl wget unzip zip gdb lib32-glibc lib32-gcc-libs net-tools openssh`
-4. 安装常用工具：`pacman -S zsh fzf ripgrep rsync fd jq bat vim neovim tmux proxychains-ng zoxide fontconfig nodejs universal-ctags nodejs npm`
+4. 安装常用工具：`pacman -S zsh fzf ripgrep rsync fd jq bat vim neovim tmux proxychains-ng zoxide fontconfig nodejs universal-ctags nodejs npm openssh `
 5. 安装插件工具：`cargo install --locked code-minimap`
 6. `proxychains`添加代理：`nvim /etc/proxychains.conf`
 7. 安装`ohmyzsh`:`proxychains sh -c "$(proxychains curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"`
@@ -182,7 +182,7 @@ AuthorizedKeysFile	.ssh/authorized_keys
 # 因此必须使用特定Linux发行版（ubuntu20.04 / 22.04)
 proxychains wsl --install -d Ubuntu-22.04
 
-# Step 0. add mirrors
+# Step 0. add mirrors and zh_CN support
 sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak
 sudo vim /etc/apt/sources.list
 # deb http://mirrors.aliyun.com/ubuntu/ jammy main restricted universe multiverse
@@ -192,6 +192,11 @@ sudo vim /etc/apt/sources.list
 
 sudo apt update
 sudo apt upgrade -y
+
+sudo apt install fonts-noto-cjk fonts-wqy-zenhei fonts-wqy-microhei
+sudo apt install language-pack-zh-hans language-pack-zh-hans-base
+sudo update-locale LANG=zh_CN.UTF-8
+source /etc/default/locale
 
 # Step 1. Add package repository
 sudo apt-get install -y gpg-agent wget proxychains
@@ -220,6 +225,11 @@ glxinfo | grep "renderer string"
 proxychains wget https://sw.kovidgoyal.net/kitty/installer.sh && chmod +x ./installer.sh && proxychains ./installer.sh
 echo 'export PATH="$PATH:$HOME/.local/kitty.app/bin"' > ~/.bashrc && source ~/.bashrc
 sudo apt install -y xdg-desktop-portal xdg-desktop-portal-gtk libnotify-bin
+
+# 安装字体
+proxychains git clone https://github.com/ryanoasis/nerd-fonts && cd nerd-fonts/ && chmod +x ./install.sh && ./install.sh Hack && ./install.sh Noto
+
+# 修改配置文件`~/.config/kitty/kitty.conf`，并复制背景图片到系统中
 
 # 修复dbus报错
 systemctl --user start xdg-desktop-portal.service systemctl --user start xdg-desktop-portal-gtk.service

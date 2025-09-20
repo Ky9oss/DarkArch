@@ -1,0 +1,3 @@
+vim.cmd('source ~/.config/nvim/init.vim')
+require("config.lazy")
+

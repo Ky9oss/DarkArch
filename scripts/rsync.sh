@@ -41,6 +41,6 @@ rsync -av --delete --progress \
       --exclude='**/.github/' \
       --exclude='.env' \
       --exclude='.env.production' \
-      --exclude='LuaSnip/tests/data/symlink-vscode/snippets/all.json' \
+      --exclude='LuaSnip/' \
       $SRC_PLUGGED $DEST_PLUGGED
 

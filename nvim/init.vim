@@ -219,8 +219,6 @@ nnoremap <silent><C-p> :BufferLineCyclePrev<CR>
 " tagbar
 nmap <F8> :TagbarToggle<CR>
 
-
-
 lua << EOF
 require("opts.opts")
 require("opts.nvim-tree")
@@ -439,11 +437,11 @@ require("lspconfig").pylsp.setup({
   },
 })
 
-local runtime_path = vim.api.nvim_get_runtime_file("", true)  -- 返回 runtimepath 下所有文件
-local library = {}
-for _, path in ipairs(runtime_path) do
-  library[path] = true
-end
+-- local runtime_path = vim.api.nvim_get_runtime_file("", true)  -- 返回 runtimepath 下所有文件
+-- local library = {}
+-- for _, path in ipairs(runtime_path) do
+--   library[path] = true
+-- end
 require("lspconfig").lua_ls.setup {
   settings = {
     Lua = {
@@ -454,9 +452,9 @@ require("lspconfig").lua_ls.setup {
       diagnostics = {
         globals = { "vim" }, -- 避免 'vim' 未定义警告
       },
-      workspace = {
-        library = library,
-      },
+      -- workspace = {
+      --   library = library,
+      -- },
       telemetry = { enable = false },
     },
   },
@@ -1127,3 +1125,4 @@ end, {silent = true})
 require("keys")
 
 EOF
+

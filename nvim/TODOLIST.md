@@ -2,15 +2,33 @@
 
 ## distant.nvim
 
-- [ ] buffer id error
+- [x] buffer id error
+- [ ] remote LSP stack error:
+```lua
+fname: D:\Tools\Tools_Hacker\13.KgScript\c#\Certify\Certify\Program.cs
+[TEST] OmniSharp LSP attached to buffer 18
+LSP[distant]: Error ON_EXIT_CALLBACK_ERROR: "...re/nvim/plugged/distant.nvim/lua/distant-core/client.lua:192: stack overflow"
 
-# 添加功能
-- [ ] 远程LSP + nvim-tree 支持
+-- 关掉bufferline再尝试
+```
+- [ ] lua_ls plugin lazy load
+
+# 2025-09-20
+- [x] move windows-terminal to kitty
+- [ ] use Ansible to manage servers
+- [ ] add image support in neovim
+- [ ] move plugins from vim-plug to lazy.nvim
+- [ ] add LazyDev for lua & fix the bug in lua LSP root_dir
+- [ ] move markdown from obsidian to neovim with orgmode
+- [ ] add formatter
+- [ ] move scripts from vim to lua
+- [ ] fix the bug in distant.nvim & remote omnisharp LSP
+- [ ] add dir to nvim-tree from distant.nvim
+- [ ] fix the bug in zsh vim mode that causes it to get stuck
+- [ ] Linux hacked plan
 - [ ]
 
-## (可选)额外功能
-- [ ] 能否实现近乎于chrome的js debuger
-- [ ] git历史，仿github化阅读
+# My Linux
 
 # 需要研究
 - [ ] lspconfig 启动逻辑，为何cshrap启动有误
@@ -20,6 +38,7 @@
 
 - 打印当前所有buffer的名称：`:echo map(range(1, bufnr('$')), 'bufname(v:val)')`
 - 测试远程LSP连通性：`echo -e "Content-Length: 0\r\n\r\n" | nc 127.0.0.1 5000`
+- 当前buffer的filetype：`echo &filetype`
 
 # 一些坑点
 
