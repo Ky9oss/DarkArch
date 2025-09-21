@@ -64,7 +64,7 @@ pacman -U /home/builduser/paru/paru-2.1.0-1-x86_64.pkg.tar.zst
 sudo apt update && sudo apt install -y build-essential gcc g++ make cmake autoconf automake libtool pkg-config libc6 libc6-dev libstdc++6 libssl-dev libffi-dev zlib1g zlib1g-dev wget curl git unzip net-tools libevent-dev libncurses-dev
 
 # 2. 安装常用工具
-sudo apt-get install -y zsh fzf ripgrep rsync jq bat zoxide fontconfig nodejs universal-ctags nodejs npm proxychains-ng
+sudo apt-get install -y zsh fzf ripgrep rsync jq bat zoxide fontconfig nodejs universal-ctags nodejs npm proxychains-ng socat
 
 # 3. 安装重要工具（由于apt版本管理滞后，部分重要软件手动安装新版）
 # ohmyzsh
@@ -90,6 +90,42 @@ cd ~/tools/common && proxychains wget https://github.com/neovim/neovim/releases/
 cd ~/tools/common/nvim-linux-x86_64/bin/ && echo 'export PATH='${PWD}':$PATH' >> ~/.zshrc
 source ~/.zshrc
 
+
+# Docker
+for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do sudo apt-get remove $pkg; done
+sudo apt-get install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo proxychains apt-get update
+sudo proxychains apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# Docker 代理：使用privoxy将socks5代理转http
+sudo apt install -y privoxy
+echo 'forward-socks5t / user:pass@127.0.0.1:1080 .' | sudo tee -a /etc/privoxy/config
+sudo systemctl restart privoxy
+sudo mkdir -p /etc/systemd/system/docker.service.d
+
+sudo tee /etc/systemd/system/docker.service.d/proxy.conf > /dev/null <<EOF
+[Service]
+Environment="HTTP_PROXY=http://127.0.0.1:8118"
+Environment="HTTPS_PROXY=https://127.0.0.1:8118"
+Environment="NO_PROXY=localhost,127.0.0.1"
+EOF
+
+sudo systemctl daemon-reexec
+sudo systemctl restart docker
+sudo docker run hello-world
+# 如果遇到docker compose，需要修改compose.yml文件来添加proxy：
+#    environment:
+#      - HTTP_PROXY=http://127.0.0.1:8118
+#      - HTTPS_PROXY=https://127.0.0.1:8118
+#      - NO_PROXY=localhost,127.0.0.1
+
+# FossFlow
+mkdir -p ~/tools/common/fossflow && cd ~/tools/common/fossflow && proxychains git clone https://github.com/stan-smith/FossFLOW && cd FossFLOW
+sudo docker run -p 7080:80 -v $(pwd)/diagrams:/data/diagrams stnsmith/fossflow:latest
 
 # 4. 更新配置
 cd ~/tools/common && proxychains4 git clone https://github.com/Ky9oss/DarkArch && cd DarkArch
@@ -281,3 +317,11 @@ sudo apt install -y dunst libnotify-bin
 
 > [!TIP]
 > 值得留意的是配置中的`sendInput`行为，可以利用这个方式做特殊命令的映射，类似于`kitty/wezterm`的`escape`
+
+# Ansible 配置
+```sh
+mkdir -p ~/tools/common/ansible && cd ~/tools/common/ansible && proxychains pyenv virtualenv 3.13.6 ansible && pyenv local ansible
+proxychains pip install ansible
+```
+
+# Windows 内网配置
