@@ -9,13 +9,10 @@
 - linux kitty || windows terminal
 - wsl2 with arch linux
 - debian 13
-- zsh && ohmyzsh
+- fish || ohmyzsh
 - tmux && ohmytmux
 - neovim
 
-# 安装wsl2
-1. 安装`archlinux-xxx.wsl`文件：[https://mirrors.aliyun.com/archlinux/wsl/latest/?spm=a2c6h.25603864.0.0.3b896e31D6YFPc]
-2. `wsl --install --from-file xxx.wsl`安装Arch
 
 # Arch基本配置
 1. 添加国内镜像：`sh -c 'echo -e "Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/\$repo/os/\$arch\nServer = https://mirrors.aliyun.com/archlinux/\$repo/os/\$arch\nServer = https://mirrors.ustc.edu.cn/archlinux/\$repo/os/\$arch\nServer = https://mirror.sjtu.edu.cn/archlinux/\$repo/os/\$arch" > /etc/pacman.d/mirrorlist'`
@@ -143,6 +140,16 @@ proxychains git clone https://github.com/jeffreytse/zsh-vi-mode.git ${ZSH_CUSTOM
 source ~/.zshrc
 ```
 
+# fish 配置
+```sh
+sudo apt-add-repository ppa:fish-shell/release-4
+sudo apt update
+sudo apt install fish
+chsh -s /usr/bin/fish # 修改默认shell
+fish_config theme choose 'Old School'
+fish_config prompt choose disco
+```
+
 # Tmux 配置
 1. 安装`tpm`：`mkdir -p ~/.tmux/plugins/tpm && proxychains git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm`
 2. 安装`oh-my-tmux`，随后修改`~/.config/tmux/tmux.conf.local`,参考项目文件`tmux.conf.local`
@@ -233,7 +240,37 @@ proxychains luarocks install luasocket --lua-version=5.1 --force
 luajit -e "local socket = require('socket'); print(socket._VERSION)"
 ```
 
-#### Windows OpenSSH Server
+# Windows
+## Powershell 配置
+管理员运行powershell：
+```ps1
+Install-Module -Name PowerShellGet -Force; exit
+Install-Module PSReadLine -Repository PSGallery -Scope CurrentUser -Force
+Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://ohmyposh.dev/install.ps1'))
+# 追加oh-my-posh到env $env:Path += ";C:\Users\user\AppData\Local\Programs\oh-my-posh\bin"
+oh-my-posh init powershell --config 'atomic' | Out-File -FilePath $PROFILE -Append -Encoding utf8
+Install-Script -Name Refresh-EnvironmentVariables -RequiredVersion 1.0.1
+[System.Environment]::SetEnvironmentVariable("POWERSHELL_SCRIPTS", "C:\Program Files\WindowsPowerShell\Scripts", [System.EnvironmentVariableTarget]::User)
+
+# 下面是pyenv-win & pyenv-win-venv的安装（不建议使用，两个工具之间的交互有问题，我搞了半天没弄好）
+# windows里建议anaconda，linux里建议pyenv
+[System.Environment]::SetEnvironmentVariable("DRUNTIME", "<your-path>", "MACHINE")
+proxychains git clone https://github.com/pyenv-win/pyenv-win.git $env:DRUNTIME
+[System.Environment]::SetEnvironmentVariable("PYENV", "$env:DRUNTIME\pyenv-win", "MACHINE")
+[System.Environment]::SetEnvironmentVariable( `
+  "PATH", `
+  "$env:PYENV\pyenv-win\bin;$env:PYENV\pyenv-win\shims;$([System.Environment]::GetEnvironmentVariable('PATH','MACHINE'))", `
+  "MACHINE" `
+)
+proxychains git clone https://github.com/pyenv-win/pyenv-win-venv "$env:DRUNTIME\.pyenv-win-venv"
+[System.Environment]::SetEnvironmentVariable( `
+  "PATH", `
+  "$env:DRUNTIME\.pyenv-win-venv\bin;$([System.Environment]::GetEnvironmentVariable('PATH','MACHINE'))", `
+  "MACHINE" `
+)
+```
+
+## Windows OpenSSH Server
 修改配置文件`C:\ProgramData\ssh\sshd_config`:
 ```
 Port <your_port>
@@ -241,8 +278,10 @@ ListenAddress 127.0.0.1
 PubkeyAuthentication yes
 AuthorizedKeysFile	.ssh/authorized_keys
 ```
-> [!CAUTION]
-> windows里的权限配置很坑，`~/.ssh` `~/.ssh/authorized_keys` 两个文件的权限很容易造成ssh公私钥认证失败。使用`https://github.com/PowerShell/Win32-OpenSSH`所提供的脚本`FixHostFilePermission.ps1`可以解决问题。
+> [!CAUTION] 坑点
+> 1. `~/.ssh` `~/.ssh/authorized_keys` 两个文件的权限很容易造成ssh公私钥认证失败。使用`https://github.com/PowerShell/Win32-OpenSSH`所提供的脚本`FixHostFilePermission.ps1`可以解决问题。
+> 2. `~/.ssh/authorized_keys`手动复制公钥时可能会因为CRLF格式添加额外的`\r`，可以通过`cat -A xxx`来查看文件里是否有`^M`, 如果有则使用`dos2unix`删除：`dos2unix /mnt/c/Users/<User>/.ssh/authorized_keys`
+> 3. OpenSSH新版中的公私钥默认格式为`OpenSSH`格式，使用`ssh-keygen -t rsa -m PEM -f ~/.ssh/xxx`命令生成公私钥，`-m PEM`用于指定格式为PEM。
 
 # Kitty 配置
 1. 安装环境：
@@ -324,4 +363,10 @@ mkdir -p ~/tools/common/ansible && cd ~/tools/common/ansible && proxychains pyen
 proxychains pip install ansible
 ```
 
-# Windows 内网配置
+# WSL 配置
+如果常规安装出错，可以选择手动安装方式：
+1. 安装`archlinux-xxx.wsl`文件：[https://mirrors.aliyun.com/archlinux/wsl/latest/?spm=a2c6h.25603864.0.0.3b896e31D6YFPc]
+2. `wsl --install --from-file xxx.wsl`安装Arch
+
+重点配置如下：
+- 确保使用Mirrored mode networking网络式而不是NAT或桥接模式
