@@ -58,7 +58,7 @@ pacman -U /home/builduser/paru/paru-2.1.0-1-x86_64.pkg.tar.zst
 # Ubuntu & Debian 配置
 ```bash
 # 1. 安装常用工具
-sudo apt update && sudo apt install -y build-essential gcc g++ make cmake autoconf automake libtool pkg-config libc6 libc6-dev libstdc++6 libssl-dev libffi-dev zlib1g zlib1g-dev wget curl git unzip net-tools libevent-dev libncurses-dev
+sudo apt update && sudo apt install -y build-essential gcc g++ make cmake autoconf automake libtool pkg-config libc6 libc6-dev libstdc++6 libssl-dev libffi-dev zlib1g zlib1g-dev wget curl git unzip net-tools libevent-dev libncurses-dev yacc
 
 # 2. 安装常用工具
 sudo apt-get install -y zsh fzf ripgrep rsync jq bat zoxide fontconfig nodejs universal-ctags nodejs npm proxychains-ng socat
@@ -66,10 +66,11 @@ sudo apt-get install -y zsh fzf ripgrep rsync jq bat zoxide fontconfig nodejs un
 # 3. 安装重要工具（由于apt版本管理滞后，部分重要软件手动安装新版）
 # ohmyzsh
 proxychains4 sh -c "$(proxychains4 curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-mkdir ~/tools/common && cd ~/tools/common && proxychains git clone https://github.com/tmux/tmux && cd tmux && proxychains4 sh autogen.sh && ./configure && make
-cd ~/tools/common && git clone --single-branch https://github.com/gpakosz/.tmux.git oh-my-tmux && cd oh-my-tmux
 
 # tmux
+mkdir ~/tools/common && cd ~/tools/common && proxychains git clone https://github.com/tmux/tmux && cd tmux && proxychains4 sh autogen.sh && ./configure && make
+sudo make install && tmux -V # tmux next-3.6
+cd ~/tools/common && git clone --single-branch https://github.com/gpakosz/.tmux.git oh-my-tmux && cd oh-my-tmux
 mkdir -p ~/.config/tmux
 ln -s ${PWD}/.tmux.conf ~/.config/tmux/tmux.conf 
 cp ${PWD}/.tmux.conf.local ~/.config/tmux/tmux.conf.local
@@ -184,9 +185,17 @@ proxychains git clone 'https://github.com/aserowy/tmux.nvim'
 1. 安装`vim-plug`：`proxychains curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim`
 2. 将其他`nvim/`下所有文件复制至`~/.config/nvim/`文件夹中
 3. 重启nvim并使用`:PlugInstall`安装插件
-4. 安装`nvim-lspconfig`:`proxychains git clone https://github.com/neovim/nvim-lspconfig ~/.config/nvim/pack/nvim/start/nvim-lspconfig`
+4. 安装`.vim`插件（`.lua`插件通过`lazy.nvim`自动安装）：
+```bash
+proxychains git clone https://github.com/neovim/nvim-lspconfig ~/.config/nvim/pack/nvim/start/nvim-lspconfig
+proxychains git clone https://github.com/dhruvasagar/vim-table-mode ~/.config/nvim/pack/nvim/start/vim-table-mode
+proxychains git clone https://github.com/voldikss/vim-floaterm ~/.config/nvim/pack/nvim/start/vim-floaterm
+proxychains git clone https://github.com/preservim/tagbar ~/.config/nvim/pack/nvim/start/tagbar
+proxychains git clone https://github.com/itchyny/lightline.vim ~/.config/nvim/pack/nvim/start/lightline
+proxychains git clone https://github.com/editorconfig/editorconfig-vim ~/.config/nvim/pack/nvim/start/editorconfig-vim
+```
 
-### Neovim-markdowss
+### Neovim-markdown
 1. `MasonInstall marksman`
 
 ### Neovim-rust
@@ -284,6 +293,8 @@ AuthorizedKeysFile	.ssh/authorized_keys
 > 3. OpenSSH新版中的公私钥默认格式为`OpenSSH`格式，使用`ssh-keygen -t rsa -m PEM -f ~/.ssh/xxx`命令生成公私钥，`-m PEM`用于指定格式为PEM。
 
 # Kitty 配置
+> [!WARNING]
+> 为了终端图片绘制功能，在windows上通过WSLg实现kitty GPU功能是个坏主意，wsl2启动的UI界面总是有延迟。终端仿真器应始终运行在本机上。
 1. 安装环境：
 ```bash
 # 由于kitty需要使用GPU，需要给WSL2添加GPU支持：https://www.intel.com/content/www/us/en/docs/oneapi/installation-guide-linux/2023-0/configure-wsl-2-for-gpu-workflows.html

@@ -8,11 +8,7 @@ ZSH_THEME="clean"
 # proxychains git clone https://github.com/jeffreytse/zsh-vi-mode $ZSH_CUSTOM/plugins/zsh-vi-mode
 # proxychains git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 # proxychains git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-
-# plugins=(git zsh-syntax-highlighting zsh-autosuggestions zsh-vi-mode) 
-# zsh-vi-mode always have a bad performance
-# zsh-syntax-highlighting SLOW my WSL2 in ubuntu22.04 . I don't know why
-plugins=(git zsh-autosuggestions) 
+plugins=(git zsh-syntax-highlighting zsh-autosuggestions zsh-vi-mode) # zsh-vi-mode
 source $ZSH/oh-my-zsh.sh
 
 # zoxide
@@ -77,5 +73,4 @@ nvim() {
   fi
 }
 
-export PATH=~/tools/common/nvim-linux-x86_64/bin:$PATH
-export PATH=~/.local/kitty.app/bin:$PATH
+

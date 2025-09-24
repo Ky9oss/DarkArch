@@ -11,6 +11,14 @@
 - [x] move windows-terminal to kitty
 - [x] move arch to debian
 
+# 2025-09-25
+
+## Features
+- [x] move plugins from vim-plug to lazy.nvim
+- [x] deprecate bufferline cause weird error
+- [x] add LazyDev to enhance Lua LSP
+- [x] add orgmode for TODOLIST
+- [x] add markdown preview plugin
 
 
 

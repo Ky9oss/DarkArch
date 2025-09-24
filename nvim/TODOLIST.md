@@ -16,22 +16,12 @@ LSP[distant]: Error ON_EXIT_CALLBACK_ERROR: "...re/nvim/plugged/distant.nvim/lua
 # 2025-09-20
 - [x] move windows-terminal to kitty
 - [x] move arch to debian
-- [ ] use Ansible to manage servers
 
-- [ ] add image support in neovim
-- [ ] move markdown from obsidian to neovim with orgmode
-- [ ] move plugins from vim-plug to lazy.nvim
-- [ ] add LazyDev for lua & fix the bug in lua LSP root_dir
-- [ ] add formatter
-- [ ] move scripts from vim to lua
+- [x] move plugins from vim-plug to lazy.nvim
+- [x] add LazyDev for lua & fix the bug in lua LSP root_dir
+- [ ] add formatter conform.nvim
 
-- [ ] fix the bug in distant.nvim & remote omnisharp LSP
-- [ ] add dir to nvim-tree from distant.nvim
-- [ ] fix the bug in zsh vim mode that causes it to get stuck
-- [ ] Linux hacked plan
 - [ ]
-
-# My Linux
 
 # 需要研究
 - [ ] lspconfig 启动逻辑，为何cshrap启动有误
