@@ -6,12 +6,14 @@
 
 # 项目环境
 
+> [!WARNING]
+> Neovim 配置以移动至 https://github.com/Ky9oss/SpecterVim
+
 - linux kitty || windows terminal
 - wsl2 with arch linux
 - debian 13
 - fish || ohmyzsh
 - tmux && ohmytmux
-- neovim
 
 
 # Arch基本配置
@@ -185,14 +187,10 @@ proxychains git clone 'https://github.com/aserowy/tmux.nvim'
 1. 将其他`nvim/`下所有文件复制至`~/.config/nvim/`(linux) 或 `~\AppData\Local\nvim`(windows)
 2. 重启nvim
 
-### Neovim-markdown
-1. `MasonInstall marksman`
-
-### Neovim-rust
+### rust
 1. 安装环境：`proxychains curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh`
-2. 使用`mason`安装：`:MasonInstall rust-analyzer codelldb`
 
-### Neovim-python
+### python
 1. install pyenv: `proxychains curl -fsSL https://pyenv.run | proxychains bash`
 2. add pyenv startup env: 
 ```sh
@@ -203,41 +201,21 @@ echo 'eval "$(pyenv init - zsh)"' >> ~/.zshrc
 3. `source ~/.zshrc`
 4. `proxychains pyenv install 3.13.6`
 5. `pyenv global 3.13.6`
-6. mason install lsp: `:MasonInstall mypy debugpy python-lsp-server`
 
-### Neovim-lua
-1. mason install lsp: `:MasonInstall lua-language-server`
-
-### Neovim-asm
+### asm
 1. `proxychains wget --secure-protocol=tlsv1_2 --no-check-certificate https://github.com/bergercookie/asm-lsp/releases/download/v0.10.0/asm-lsp-x86_64-unknown-linux-gnu.tar.gz`
 2. `tar -zxvf asm-lsp-x86_64-unknown-linux-gnu.tar.gz`
 3. add asm-lsp in $PATH
 
-### Neovim-java
+### java
 1. `curl -s "https://get.sdkman.io" | bash`
 2. `source "$HOME/.sdkman/bin/sdkman-init.sh"`
 3. `sdk use java 21.0.8-amzn`
 4. `sdk default java 21.0.8-amzn`
 
-### Neovim-dotnet
+### dotnet
 1. `pacman -S dotnet-sdk`
 2. `dotnet tool install -g EasyDotnet`
-
-> [!CAUTION]
-> 如果需要直接修改`omnisharp`的配置，会意外导致Lsp无法被注册，不确定原因。
-> 修复办法是: 直接在`~/.local/share/nvim/plugged/nvim-lspconfig/lsp/omnisharp.lua`中修改配置
-
-### Neovim Remote LSP
-
-```bash
-pacman -S luarocks lua51
-luarocks config lua_version 5.1
-luarocks config variables.LUA_INCDIR /usr/include/luajit-2.1
-proxychains luarocks install luasocket --lua-version=5.1 --force
-
-# check if success
-luajit -e "local socket = require('socket'); print(socket._VERSION)"
-```
 
 # Windows
 ## Powershell 配置
@@ -267,6 +245,10 @@ proxychains git clone https://github.com/pyenv-win/pyenv-win-venv "$env:DRUNTIME
   "$env:DRUNTIME\.pyenv-win-venv\bin;$([System.Environment]::GetEnvironmentVariable('PATH','MACHINE'))", `
   "MACHINE" `
 )
+
+# install zoxide
+cargo install zoxide --locked
+echo 'Invoke-Expression (& { (zoxide init powershell | Out-String) })' | Out-File -FilePath $PROFILE -Append -Encoding utf8
 ```
 
 ## Windows OpenSSH Server

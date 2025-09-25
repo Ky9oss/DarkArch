@@ -3,15 +3,6 @@
 ## distant.nvim
 
 - [x] buffer id error
-- [ ] remote LSP stack error:
-```text
-fname: D:\Tools\Tools_Hacker\13.KgScript\c#\Certify\Certify\Program.cs
-[TEST] OmniSharp LSP attached to buffer 18
-LSP[distant]: Error ON_EXIT_CALLBACK_ERROR: "...re/nvim/plugged/distant.nvim/lua/distant-core/client.lua:192: stack overflow"
-
--- 关掉bufferline再尝试
-```
-- [ ] lua_ls plugin lazy load
 
 # 2025-09-20
 - [x] move windows-terminal to kitty
@@ -20,12 +11,6 @@ LSP[distant]: Error ON_EXIT_CALLBACK_ERROR: "...re/nvim/plugged/distant.nvim/lua
 - [x] move plugins from vim-plug to lazy.nvim
 - [x] add LazyDev for lua & fix the bug in lua LSP root_dir
 - [x] add formatter conform.nvim
-
-- [ ]
-
-# 需要研究
-- [ ] lspconfig 启动逻辑，为何cshrap启动有误
-- [ ] Client -> LSP server -> Client 具体转发数据格式、是否预处理/后处理数据、能否直接使用TCP流
 
 # 有用的快捷命令
 
