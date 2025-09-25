@@ -182,18 +182,8 @@ proxychains git clone 'https://github.com/aserowy/tmux.nvim'
 
 
 # Neovim 配置
-1. 安装`vim-plug`：`proxychains curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim`
-2. 将其他`nvim/`下所有文件复制至`~/.config/nvim/`文件夹中
-3. 重启nvim并使用`:PlugInstall`安装插件
-4. 安装`.vim`插件（`.lua`插件通过`lazy.nvim`自动安装）：
-```bash
-proxychains git clone https://github.com/neovim/nvim-lspconfig ~/.config/nvim/pack/nvim/start/nvim-lspconfig
-proxychains git clone https://github.com/dhruvasagar/vim-table-mode ~/.config/nvim/pack/nvim/start/vim-table-mode
-proxychains git clone https://github.com/voldikss/vim-floaterm ~/.config/nvim/pack/nvim/start/vim-floaterm
-proxychains git clone https://github.com/preservim/tagbar ~/.config/nvim/pack/nvim/start/tagbar
-proxychains git clone https://github.com/itchyny/lightline.vim ~/.config/nvim/pack/nvim/start/lightline
-proxychains git clone https://github.com/editorconfig/editorconfig-vim ~/.config/nvim/pack/nvim/start/editorconfig-vim
-```
+1. 将其他`nvim/`下所有文件复制至`~/.config/nvim/`(linux) 或 `~\AppData\Local\nvim`(windows)
+2. 重启nvim
 
 ### Neovim-markdown
 1. `MasonInstall marksman`
