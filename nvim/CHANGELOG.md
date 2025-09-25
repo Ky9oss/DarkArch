@@ -19,6 +19,7 @@
 - [x] add LazyDev to enhance Lua LSP
 - [x] add orgmode for TODOLIST
 - [x] add markdown preview plugin
+- [x] add conform.nvim to format code
 
 
 

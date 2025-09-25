@@ -1,4 +1,4 @@
-vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
   callback = function()
     local editorconfig_exists = vim.fn.findfile(".editorconfig", ".;") ~= ""
     if not editorconfig_exists then
@@ -17,8 +17,8 @@ root = true
 
 [*]
 indent_style = space
-indent_size = 2
-tab_width = 2
+indent_size = 4
+tab_width = 4
 end_of_line = lf
 insert_final_newline = true
 
@@ -27,7 +27,7 @@ max_line_length = 120
 
 [{Makefile,**/Makefile,runtime/doc/*.txt,*.md}]
 indent_style = tab
-indent_size = 8
+indent_size = 4
 ]]
 
 -- 当 project.nvim 确定项目根目录后触发

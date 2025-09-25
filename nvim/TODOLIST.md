@@ -19,7 +19,7 @@ LSP[distant]: Error ON_EXIT_CALLBACK_ERROR: "...re/nvim/plugged/distant.nvim/lua
 
 - [x] move plugins from vim-plug to lazy.nvim
 - [x] add LazyDev for lua & fix the bug in lua LSP root_dir
-- [ ] add formatter conform.nvim
+- [x] add formatter conform.nvim
 
 - [ ]
 

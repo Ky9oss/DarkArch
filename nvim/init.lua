@@ -25,13 +25,13 @@ vim.lsp.config('rust_analyzer', {
   settings = {
     ['rust-analyzer'] = {
       diagnostics = {
-        enable = false;
+        enable = false,
       },
       cargo = {
-          allFeatures = true
+        allFeatures = true
       },
       procMacro = {
-          enable = true
+        enable = true
       }
     }
   }
@@ -62,8 +62,8 @@ vim.lsp.config('lua_ls', {
     if client.workspace_folders then
       local path = client.workspace_folders[1].name
       if
-        path ~= vim.fn.stdpath('config')
-        and (vim.uv.fs_stat(path .. '/.luarc.json') or vim.uv.fs_stat(path .. '/.luarc.jsonc'))
+          path ~= vim.fn.stdpath('config')
+          and (vim.uv.fs_stat(path .. '/.luarc.json') or vim.uv.fs_stat(path .. '/.luarc.jsonc'))
       then
         return
       end
@@ -133,4 +133,3 @@ vim.lsp.enable('bashls')
 
 require("check-enviroment")
 require("keys")
-

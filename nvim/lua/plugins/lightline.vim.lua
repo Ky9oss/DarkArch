@@ -1,9 +1,9 @@
 return {
   "itchyny/lightline.vim",
-  dependencies = {"ahmedkhalf/project.nvim"},
+  dependencies = { "ahmedkhalf/project.nvim" },
   config = function()
-    local project = require("project_nvim.project") 
-    local project_root_path = project.get_project_root() 
+    local project = require("project_nvim.project")
+    local project_root_path = project.get_project_root()
     local project_name = ""
 
     if project_root_path == nil then
@@ -15,13 +15,13 @@ return {
     vim.g.lightline = {
       active = {
         left = {
-          { "mode", "paste" },
+          { "mode",     "paste" },
           { "readonly", "project_name", "filename", "modified" },
         },
         right = {
           { "lineinfo" },
           { "percent" },
-          { "project", "fileformat", "fileencoding", "filetype"}
+          { "project", "fileformat", "fileencoding", "filetype" }
 
         }
       },
