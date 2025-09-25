@@ -23,6 +23,8 @@ end_of_line = lf
 insert_final_newline = true
 
 [*.lua]
+indent_size = 2
+tab_width = 2
 max_line_length = 120
 
 [{Makefile,**/Makefile,runtime/doc/*.txt,*.md}]
