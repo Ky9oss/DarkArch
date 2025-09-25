@@ -4,7 +4,7 @@
 
 - [x] buffer id error
 - [ ] remote LSP stack error:
-```lua
+```text
 fname: D:\Tools\Tools_Hacker\13.KgScript\c#\Certify\Certify\Program.cs
 [TEST] OmniSharp LSP attached to buffer 18
 LSP[distant]: Error ON_EXIT_CALLBACK_ERROR: "...re/nvim/plugged/distant.nvim/lua/distant-core/client.lua:192: stack overflow"
