@@ -1,13 +1,8 @@
-# Dark Arch: 打造最强开发环境
-![](img/main.png)
-![](img/index.png)
-> [!IMPORTANT] 
-> 本仓库仅记录具体安装命令，用于个人快速搭建环境，不涉及任何插件二开细节、工具原理、使用方式等解释，请自行辨别。
-
-# 项目环境
-
+软件环境配置集成仓库
 > [!WARNING]
 > Neovim 配置以移动至 https://github.com/Ky9oss/SpecterVim
+
+# 项目环境
 
 - linux kitty || windows terminal
 - wsl2 with arch linux
@@ -201,6 +196,7 @@ echo 'eval "$(pyenv init - zsh)"' >> ~/.zshrc
 3. `source ~/.zshrc`
 4. `proxychains pyenv install 3.13.6`
 5. `pyenv global 3.13.6`
+6. install uv: `curl -LsSf https://astral.sh/uv/install.sh | sh`
 
 ### asm
 1. `proxychains wget --secure-protocol=tlsv1_2 --no-check-certificate https://github.com/bergercookie/asm-lsp/releases/download/v0.10.0/asm-lsp-x86_64-unknown-linux-gnu.tar.gz`
