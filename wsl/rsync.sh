@@ -43,4 +43,3 @@ rsync -av --delete --progress \
       --exclude='.env.production' \
       --exclude='LuaSnip/' \
       $SRC_PLUGGED $DEST_PLUGGED
-
